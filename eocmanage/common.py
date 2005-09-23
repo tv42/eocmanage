@@ -2,6 +2,9 @@ import string, email.Utils
 from formless import annotate
 
 class EmailAddress(annotate.String):
+    required = True
+    requiredFailMessage = 'Please enter an email address.'
+
     allowedSpecials = '@.+-'
     def _checkMailAddress(self, val):
         for c in val:
@@ -16,7 +19,7 @@ class EmailAddress(annotate.String):
         val = super(EmailAddress, self).coerce(*a, **kw)
         realname, address = email.Utils.parseaddr(val)
         if not address:
-            raise annotate.InputError, "Please enter an email address"
+            raise annotate.InputError, self.requiredFailMessage
         if '@' not in address:
             raise annotate.InputError, "Please include a domain in the email address"
         if address.count('@') != 1:
