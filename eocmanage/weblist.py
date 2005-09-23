@@ -1,4 +1,4 @@
-import os
+import os, errno
 from zope.interface import implements
 from nevow import inevow, loaders, rend, tags, url
 from formless import iformless, annotate, webform
@@ -108,3 +108,22 @@ class WebMailingList(rend.Page):
     render_ifOwner = common.render_ifOwner
 
     render_zebra = zebra.zebra()
+
+    def data_blurb(self, ctx, data):
+        import eoc #TODO get rid of this
+        path = os.path.join(eoc.DOTDIR, self.listname)
+        loader = loaders.xmlfile('blurb.html',
+                                 templateDir=path)
+        try:
+            return loader.load()
+        except OSError, e:
+            if e.errno == errno.ENOENT:
+                pass # explicitly
+            else:
+                log.err()
+                pass
+        except:
+            log.err()
+            pass
+
+        return None

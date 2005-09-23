@@ -11,6 +11,13 @@
 
     <p><a href="../">all lists</a></p>
 
+    <nevow:invisible nevow:render="if" nevow:data="blurb">
+      <nevow:invisible nevow:pattern="True">
+	<h2>About the List</h2>
+	<nevow:invisible nevow:render="data"/>
+      </nevow:invisible>
+    </nevow:invisible>
+
     <h2>Using the List</h2>
     <p>
       To post a message to the list, send email to
