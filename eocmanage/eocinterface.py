@@ -50,6 +50,19 @@ class MailingList(object):
     def runEoc(self, *args):
         return _runEoc('--name', self.listname, *args)
 
+    def exists(self):
+        d = self.runEoc('--is-list')
+        def cb(dummy):
+            return True
+        def eb(reason):
+            reason.trap(EocFailed)
+            if reason.value.code == 1:
+                return False
+            else:
+                raise
+        d.addCallbacks(cb, eb)
+        return d
+
     def subscribe(self, address):
         return self.runEoc(
             '--subscribe',

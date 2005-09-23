@@ -24,7 +24,15 @@ class EocManage(rend.Page):
         elif '@' not in name:
             return None
         else:
-            return weblist.WebMailingList(name)
+            ml = eocinterface.MailingList(name)
+            d = ml.exists()
+            def cb(exists, name):
+                if exists:
+                    return weblist.WebMailingList(name)
+                else:
+                    return None
+            d.addCallback(cb, name)
+            return d
 
     def data_list(self, ctx, data):
         return eocinterface.listLists()
