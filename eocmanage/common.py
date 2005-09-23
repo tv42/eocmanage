@@ -20,7 +20,7 @@ class EmailAddress(annotate.String):
         realname, address = email.Utils.parseaddr(val)
         if not address:
             raise annotate.InputError, self.requiredFailMessage
-        if '@' not in address:
+        if ('@' not in address or address.endswith('@')):
             raise annotate.InputError, "Please include a domain in the email address"
         if address.count('@') != 1:
             raise annotate.InputError, "Please include a valid hostname in the email address"
