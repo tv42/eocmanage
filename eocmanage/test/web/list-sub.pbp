@@ -1,0 +1,25 @@
+pyload eocmanage/test/util/pbputil.py
+do destroy foo@bar.example.com
+go http://localhost:8080/
+code 200
+find "Create"
+notfind "foo@bar.example.com"
+formvalue create name foo@bar.example.com
+submit create
+code 200
+find "foo@bar\.example\.com"
+
+go /foo@bar.example.com
+find Subscribe
+notfind "jack@smith.example.com"
+find "No subscribers\."
+formvalue subscribe address jack@smith.example.com
+submit subscribe
+code 200
+find "jack@smith\.example\.com"
+notfind "No subscribers."
+formvalue unsubscribe address jack@smith.example.com
+submit unsubscribe
+code 200
+notfind "jack@smith.example.com"
+find "No subscribers\."

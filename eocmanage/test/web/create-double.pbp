@@ -1,0 +1,16 @@
+pyload eocmanage/test/util/pbputil.py
+do destroy foo@bar.example.com
+go http://localhost:8080/
+code 200
+find "Create"
+notfind "foo@bar.example.com"
+formvalue create name foo@bar.example.com
+submit create
+code 200
+find "foo@bar\.example\.com"
+formvalue create name foo@bar.example.com
+submit create
+code 200
+# TODO want a more explicit error message
+find "Eoc failed"
+find "eoc\.ListExists: foo@bar\.example\.com"

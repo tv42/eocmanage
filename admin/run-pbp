@@ -1,0 +1,114 @@
+#!/usr/bin/python2.4
+import os, sys, shutil, subprocess, socket, errno, signal
+
+def waitUntilListening():
+    s = socket.socket()
+    while True:
+        try:
+            s.connect(('127.0.0.1', 8080))
+        except socket.error, e:
+            if e.args[0] == errno.ECONNREFUSED:
+                pass
+            else:
+                s.close()
+                raise
+        else:
+            s.close()
+            break
+
+def mustNotListenYet():
+    s = socket.socket()
+    try:
+        s.connect(('127.0.0.1', 8080))
+    except socket.error, e:
+        if e.args[0] == errno.ECONNREFUSED:
+            pass
+        else:
+            s.close()
+            raise
+    else:
+        s.close()
+        print >>sys.stderr, '%s: twistd must not be listening yet.' % sys.argv[0]
+        sys.exit(1)
+
+mustNotListenYet()
+
+os.environ['PATH'] = ':'.join([os.path.join(os.getcwd(),
+                                            'eocmanage',
+                                            'test',
+                                            'util',
+                                            'mock-bin'),
+                               os.environ['PATH']])
+
+shutil.rmtree('dot-eoc')
+os.mkdir('dot-eoc')
+
+twistdEnv = {}
+twistdEnv.update(os.environ)
+twistdEnv['PYTHONPATH'] = ':'.join(['.',
+                                    # TODO work around nevow 0.4.1 bug, fixed in r1510.
+                                    os.path.expanduser('~/src/nevow/trunk'),
+                                    twistdEnv.get('PYTHONPATH', '.')])
+twistd = subprocess.Popen(args=['twistd',
+                                '-n', '-o', '-y',
+                                'test.tac',
+                                '--pidfile', 'test.pid'],
+                          close_fds=True,
+                          env=twistdEnv)
+
+try:
+
+    waitUntilListening()
+
+    testroots = sys.argv[1:]
+    if not testroots:
+        testroots = ['eocmanage/test']
+
+    tests = []
+    for testroot in testroots:
+        for root, dirs, files in os.walk(testroot):
+            if '_init.pbp' in files:
+                tests.append(os.path.join(root, '_init.pbp'))
+
+            dirs[:] = [d for d in dirs
+                       if not d.startswith('.')
+                       and not d.startswith('_')]
+
+            l = []
+            for test in files:
+                if (test.startswith('.')
+                    or test.startswith('_')):
+                    continue
+                if not test.endswith('.pbp'):
+                    continue
+                if '_reset.pbp' in files:
+                    l.append(os.path.join(root, '_reset.pbp'))
+                l.append(os.path.join(root, test))
+            tests.extend(l)
+
+    returncode = subprocess.call(args=[
+        os.path.expanduser('pbpscript'),
+        '--',
+        ] + tests)
+
+    if returncode < 0:
+        print >>sys.stderr, "%s: pbp exited with signal %d" % (
+            sys.argv[0], -returncode)
+        sys.exit(1)
+    elif returncode >0:
+        print >>sys.stderr, "%s: pbp exited with code %d" % (
+            sys.argv[0], returncode)
+        sys.exit(1)
+
+finally:
+    os.kill(twistd.pid, signal.SIGTERM)
+    returncode = twistd.wait()
+    if returncode < 0:
+        if returncode != -signal.SIGTERM:
+            print >>sys.stderr, "%s: twistd exited with signal %d" % (
+                sys.argv[0], -returncode)
+            sys.exit(1)
+    elif returncode >0:
+        print >>sys.stderr, "%s: twistd exited with code %d" % (
+            sys.argv[0], returncode)
+        sys.exit(1)

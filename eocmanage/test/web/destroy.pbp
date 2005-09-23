@@ -1,0 +1,18 @@
+pyload eocmanage/test/util/pbputil.py
+do destroy foo@bar.example.com
+go http://localhost:8080/
+code 200
+find "Create"
+notfind "foo@bar\.example\.com"
+formvalue create name foo@bar.example.com
+submit create
+code 200
+find "foo@bar\.example\.com"
+
+follow "foo@bar\.example\.com" "List administration"
+code 200
+
+submit destroy
+code 200
+title "Overview of Mailing Lists"
+notfind "foo@bar\.example\.com"

@@ -1,0 +1,39 @@
+go http://localhost:8080/
+code 200
+
+submit create
+code 200
+find "Error:"
+find "Please enter an email address"
+
+formvalue create name <>
+submit create
+code 200
+find "Error:"
+find "Please enter an email address"
+
+formvalue create name "John Doe <>"
+submit create
+code 200
+find "Error:"
+find "Please enter an email address"
+
+formvalue create name foo
+submit create
+code 200
+find "Error:"
+find "Please include a domain in the email address"
+
+# TODO email.Utils.parseaddr('foo@bar@baz') == ('', 'foo@bar')
+# as long as that is broken, we give up here..
+## formvalue create name foo@bar@baz
+## submit create
+## code 200
+## find "Error:"
+## find "Please include a valid hostname in the email address"
+
+formvalue create name @foo
+submit create
+code 200
+find "Error:"
+find "Please include a local part in the email address"

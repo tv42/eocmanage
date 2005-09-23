@@ -1,0 +1,9 @@
+#!/usr/bin/python
+SHAREDIR="/usr/share/enemies-of-carlotta"
+
+import sys
+sys.path.insert(0, SHAREDIR)
+
+import eoc, os
+eoc.DOTDIR=os.path.abspath('dot-eoc')
+eoc.main(sys.argv[1:])
