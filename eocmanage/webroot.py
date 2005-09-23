@@ -1,8 +1,8 @@
 import os
 from zope.interface import implements
-from nevow import rend, loaders
+from nevow import rend, loaders, static
 from formless import annotate, webform
-from eocmanage import weblist, eocinterface
+from eocmanage import weblist, eocinterface, zebra
 from eocmanage.common import EmailAddress
 
 class IMain(annotate.TypedInterface):
@@ -18,6 +18,8 @@ class EocManage(rend.Page):
                                  templateDir=os.path.split(os.path.abspath(__file__))[0])
 
 
+    child__style = static.File(os.path.join(os.path.split(os.path.abspath(__file__))[0], 'style'))
+
     def childFactory(self, ctx, name):
         if name.startswith('_'):
             return None
@@ -30,7 +32,7 @@ class EocManage(rend.Page):
         return eocinterface.listLists()
 
     def render_form(self, ctx, data):
-        return webform.renderForms()
+        return ctx.tag[webform.renderForms()]
 
     def _createFailed(self, reason, name):
         reason.trap(eocinterface.EocFailed)
@@ -42,3 +44,12 @@ class EocManage(rend.Page):
         d = eocinterface.create(name, ['TODO'])
         d.addErrback(self._createFailed, name)
         return d
+
+    def render_if(self, ctx, data): #TODO share
+        r=ctx.tag.allPatterns(str(bool(data)))
+        return ctx.tag.clear()[r]
+
+    def render_ifAdmin(self, ctx, data):
+        return self.render_if(ctx, True) #TODO unhardcode, share
+
+    render_zebra = zebra.zebra()

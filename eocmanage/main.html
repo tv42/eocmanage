@@ -3,17 +3,50 @@
       xmlns:nevow="http://nevow.com/ns/nevow/0.1">
   <head>
     <title>Overview of Mailing Lists</title>
+    <link rel="stylesheet" type="text/css" href="_style/eocmanage.css" />
   </head>
   <body>
-    <nevow:invisible nevow:render="form" />
-    <ul nevow:render="sequence" nevow:data="list">
-      <li nevow:pattern="item">
-	<a>
-	  <nevow:attr name="href"><nevow:invisible nevow:render="string" /></nevow:attr>
-	  <nevow:invisible nevow:render="string" />
-	</a>
-      </li>
-      <li nevow:pattern="empty">No lists.</li>
-    </ul>
+    <h1>Overview of Mailing Lists</h1>
+    <p>
+      Hello!
+
+      Below is a listing of all the public mailing lists.
+      <!-- TODO on lists.example.com -->
+
+      Choose a list to subscribe, unsubscribe or to get more
+      information about it.
+    </p>
+
+    <p>
+      You can ask for help by emailing
+      <a href="mailto:TODO@TODO">TODO@TODO</a>.
+    </p>
+
+    <nevow:invisible nevow:render="ifAdmin">
+      <nevow:invisible nevow:pattern="True">
+	<h2>List Administration</h2>
+	<div class="eocmanage-admin" nevow:render="form" />
+      </nevow:invisible>
+    </nevow:invisible>
+
+    <h2>All Lists</h2>
+    <table nevow:render="sequence" nevow:data="list">
+      <tr nevow:pattern="header" nevow:render="zebra">
+	<th>List</th>
+	<th>Description</th>
+      </tr>
+      <tr nevow:pattern="item" nevow:render="zebra">
+	<td>
+	  <a>
+	    <nevow:attr name="href"><nevow:invisible nevow:render="string" /></nevow:attr>
+	    <nevow:invisible nevow:render="string" />
+	  </a>
+	</td>
+	<td>
+	  TODO description here
+	</td>
+      </tr>
+      <tr nevow:pattern="empty"><td rowspan="2">No lists.</td></tr>
+    </table>
   </body>
 </html>

@@ -1,0 +1,17 @@
+h1 {
+ background-color: #C0E0EB;
+ text-color: black;
+}
+
+h2 {
+ background-color: #FCF1D1;
+ text-color: black;
+}
+
+.zebra-even {
+ background-color: #edf3fe;
+}
+
+.zebra-odd {
+ background-color: #ffffff;
+}
