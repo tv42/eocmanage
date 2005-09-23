@@ -24,6 +24,8 @@ class EmailAddress(annotate.String):
             raise annotate.InputError, "Please include a domain in the email address"
         if address.count('@') != 1:
             raise annotate.InputError, "Please include a valid hostname in the email address"
+        if address.startswith('@'):
+            raise annotate.InputError, "Please include a local part in the email address"
 
         self._checkMailAddress(address)
         return address
