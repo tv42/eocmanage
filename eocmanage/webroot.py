@@ -5,20 +5,18 @@ from formless import annotate, webform
 from eocmanage import weblist, eocinterface, zebra
 from eocmanage.common import EmailAddress
 
-class IMain(annotate.TypedInterface):
-    def create(self, name=EmailAddress()):
-        #TODO verify we can handle it?
-        pass
-    create = annotate.autocallable(create)
-
 class EocManage(rend.Page):
-    implements(IMain)
     addSlash = True
     docFactory = loaders.xmlfile('main.html',
                                  templateDir=os.path.split(os.path.abspath(__file__))[0])
 
 
-    child__style = static.File(os.path.join(os.path.split(os.path.abspath(__file__))[0], 'style'))
+    child__style = static.File(os.path.join(os.path.split(os.path.abspath(__file__))[0],
+                                            'style'))
+
+    def __init__(self, *a, **kw):
+        super(EocManage, self).__init__(*a, **kw)
+        self.putChild('_freeform.css', webform.defaultCSS)
 
     def childFactory(self, ctx, name):
         if name.startswith('_'):
@@ -39,6 +37,14 @@ class EocManage(rend.Page):
         raise annotate.ValidateError({'name': reason.getErrorMessage()},
                                      formErrorMessage='Eoc failed',
                                      partialForm={'name': name})
+
+    def bind_create(self, ctx):
+        return annotate.MethodBinding(
+            name='create',
+            typeValue=annotate.Method(arguments=[
+                    annotate.Argument('name', EmailAddress()),
+                    ]),
+            action='Create')
 
     def create(self, name):
         d = eocinterface.create(name, ['TODO'])
