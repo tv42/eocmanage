@@ -111,16 +111,3 @@ class MailingList(object):
 
     def destroy(self):
         return self.runEoc('--destroy')
-
-if __name__ == '__main__':
-    from twisted.internet import reactor
-    l = MailingList('foo@example.com')
-    #d = create('foo@example.com', ['bar'])
-    #d = l.subscribe('test@example.com')
-    d = l.list()
-    def _p(x):
-        print x
-    d.addBoth(_p)
-    d.addBoth(lambda _: reactor.stop())
-    reactor.run()
-
