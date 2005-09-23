@@ -40,6 +40,9 @@ class WebMailingList(eocinterface.MailingList,
         eocinterface.MailingList.__init__(self, listname)
         rend.Page.__init__(self, *a, **kw)
 
+    def data_name(self, ctx, data):
+        return self.listname
+
     def render_form(self, ctx, data):
         formDefaults = ctx.locate(iformless.IFormDefaults)
         methodDefaults = formDefaults.getAllDefaults('edit')

@@ -2,9 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:nevow="http://nevow.com/ns/nevow/0.1">
   <head>
-    <title>This is title (TODO)</title>
+    <title>Mailing List <nevow:invisible nevow:render="string" nevow:data="name"/></title>
   </head>
   <body>
+    <h1>List administration</h1>
     <nevow:invisible nevow:render="form"/>
     <ul nevow:render="sequence" nevow:data="list">
       <li nevow:pattern="item">
