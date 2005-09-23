@@ -20,3 +20,10 @@ h2 {
 .freeform-description {
  border-bottom: none;
 }
+
+.eocmanage-footer {
+ text-align: right;
+ font-size: 80%;
+ background-color: #FCF1D1;
+ text-color: black;
+}
