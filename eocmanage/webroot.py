@@ -32,6 +32,13 @@ class EocManage(rend.Page):
     def render_form(self, ctx, data):
         return webform.renderForms()
 
+    def _createFailed(self, reason, name):
+        reason.trap(eocinterface.EocFailed)
+        raise annotate.ValidateError({'name': reason.getErrorMessage()},
+                                     formErrorMessage='Eoc failed',
+                                     partialForm={'name': name})
+
     def create(self, name):
-        return eocinterface.create(name,
-                                   ['TODO'])
+        d = eocinterface.create(name, ['TODO'])
+        d.addErrback(self._createFailed, name)
+        return d
