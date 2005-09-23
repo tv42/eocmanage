@@ -18,7 +18,8 @@ class EocFailed(Exception):
 def _runEoc(*args):
     d = utils.getProcessOutputAndValue(
         executable='enemies-of-carlotta',
-        args=args)
+        args=args,
+        env=os.environ)
     def _cb((out, err, code)):
         if code != 0:
             raise EocFailed, (code, err)
