@@ -38,21 +38,21 @@
 	<h2>Current Subscribers</h2>
 	<table class="eocmanage-owner" nevow:render="sequence" nevow:data="list">
 	  <tr nevow:pattern="header" nevow:render="zebra">
-	    <th>List</th>
-	    <th>Description</th>
+	    <th>Name</th>
+	    <th>Address</th>
 	  </tr>
 	  <tr nevow:pattern="item" nevow:render="zebra">
+	    <td>
+	      TODO full name here
+	    </td>
 	    <td>
 	      <a>
 		<nevow:attr name="href"><nevow:invisible nevow:render="string" /></nevow:attr>
 		<nevow:invisible nevow:render="string" />
 	      </a>
 	    </td>
-	    <td>
-	      TODO full name here
-	    </td>
 	  </tr>
-	  <tr nevow:pattern="empty"><td rowspan="2">No subscribers.</td></tr>
+	  <tr nevow:pattern="empty" nevow:render="zebra"><td colspan="2">No subscribers.</td></tr>
 	</table>
       </nevow:invisible>
     </nevow:invisible>
