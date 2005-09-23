@@ -2,7 +2,7 @@ import os
 from zope.interface import implements
 from nevow import inevow, loaders, rend, tags, url
 from formless import iformless, annotate, webform
-from eocmanage import eocinterface, zebra
+from eocmanage import eocinterface, zebra, common
 from eocmanage.common import EmailAddress
 
 class MailingListForUser(eocinterface.MailingList, rend.Fragment):
@@ -95,7 +95,6 @@ class WebMailingList(rend.Page):
         r=ctx.tag.allPatterns(str(bool(data)))
         return ctx.tag.clear()[r]
 
-    def render_ifOwner(self, ctx, data):
-        return self.render_if(ctx, True) #TODO unhardcode, share
+    render_ifOwner = common.render_ifOwner
 
     render_zebra = zebra.zebra()

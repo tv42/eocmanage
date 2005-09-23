@@ -2,7 +2,7 @@ import os
 from zope.interface import implements
 from nevow import rend, loaders, static
 from formless import annotate, webform
-from eocmanage import weblist, eocinterface, zebra
+from eocmanage import weblist, eocinterface, zebra, common
 from eocmanage.common import EmailAddress
 
 class EocManage(rend.Page):
@@ -51,11 +51,6 @@ class EocManage(rend.Page):
         d.addErrback(self._createFailed, name)
         return d
 
-    def render_if(self, ctx, data): #TODO share
-        r=ctx.tag.allPatterns(str(bool(data)))
-        return ctx.tag.clear()[r]
-
-    def render_ifAdmin(self, ctx, data):
-        return self.render_if(ctx, True) #TODO unhardcode, share
+    render_ifAdmin = common.render_ifAdmin
 
     render_zebra = zebra.zebra()

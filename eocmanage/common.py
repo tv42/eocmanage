@@ -29,3 +29,13 @@ class EmailAddress(annotate.String):
 
         self._checkMailAddress(address)
         return address
+
+def render_if(ctx, data):
+    r=ctx.tag.allPatterns(str(bool(data)))
+    return ctx.tag.clear()[r]
+
+def render_ifAdmin(self, ctx, data):
+    return render_if(ctx, True) #TODO unhardcode
+
+def render_ifOwner(self, ctx, data):
+    return render_if(ctx, True) #TODO unhardcode
