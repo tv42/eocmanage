@@ -101,10 +101,6 @@ class WebMailingList(rend.Page):
     def data_list(self, ctx, data):
         return eocinterface.MailingList(self.listname).list()
 
-    def render_if(self, ctx, data): #TODO share
-        r=ctx.tag.allPatterns(str(bool(data)))
-        return ctx.tag.clear()[r]
-
     render_ifOwner = common.render_ifOwner
 
     render_zebra = zebra.zebra()
