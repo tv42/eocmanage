@@ -23,17 +23,27 @@ class MailingListForUser(eocinterface.MailingList, rend.Fragment):
 
 class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
     def bind_edit(self, ctx):
-        return [
-            ('subscription', annotate.Radio(choices=['free',
-                                                     'moderated'])),
-            ('posting', annotate.Radio(choices=['free',
-                                                'auto',
-                                                'moderated'])),
-            ]
+        return annotate.MethodBinding(
+            name='edit',
+            typeValue=annotate.Method(arguments=[
+            annotate.Argument('subscription',
+                              annotate.Radio(choices=['free',
+                                                      'moderated'])),
+            annotate.Argument('posting',
+                              annotate.Radio(choices=['free',
+                                                      'auto',
+                                                      'moderated'])),
+            ]),
+            action='Edit')
 
 class MailingListForAdmin(eocinterface.MailingList, rend.Fragment):
     def bind_destroy(self, ctx):
-        return [('ctx', annotate.Context())]
+        return annotate.MethodBinding(
+            name='destroy',
+            typeValue=annotate.Method(arguments=[
+                    annotate.Argument('ctx', annotate.Context()),
+                    ]),
+            action='Destroy')
 
     def destroy(self, ctx):
         u = url.URL.fromContext(ctx)
