@@ -17,7 +17,7 @@ formvalue subscribe address jack@smith.example.com
 submit subscribe
 code 200
 find "jack@smith\.example\.com"
-notfind "No subscribers."
+notfind "No subscribers\."
 formvalue unsubscribe address jack@smith.example.com
 submit unsubscribe
 code 200
