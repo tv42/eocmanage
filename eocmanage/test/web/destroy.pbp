@@ -9,7 +9,8 @@ submit create
 code 200
 find "foo@bar\.example\.com"
 
-follow "foo@bar\.example\.com" "List administration"
+follow "foo@bar\.example\.com"
+title "Mailing List foo@bar\.example\.com"
 code 200
 
 submit destroy
