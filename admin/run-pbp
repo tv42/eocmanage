@@ -66,6 +66,9 @@ try:
 
     tests = []
     for testroot in testroots:
+        if testroot.endswith('.pbp'):
+            tests.append(testroot)
+            continue
         for root, dirs, files in os.walk(testroot):
             if '_init.pbp' in files:
                 tests.append(os.path.join(root, '_init.pbp'))
