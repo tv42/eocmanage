@@ -40,6 +40,7 @@ os.environ['PATH'] = ':'.join([os.path.join(os.getcwd(),
                                             'mock-bin'),
                                os.environ['PATH']])
 
+os.environ['EOC_DOTDIR'] = os.path.abspath('dot-eoc')
 shutil.rmtree('dot-eoc')
 os.mkdir('dot-eoc')
 

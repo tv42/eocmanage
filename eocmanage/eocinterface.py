@@ -84,11 +84,14 @@ class MailingList(object):
 
     def _getConfig(self):
         # TODO going too much under the hood
+        EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
+        if EOC_DOTDIR is None:
+            EOC_DOTDIR = os.path.expanduser('~/.enemies-of-carlotta')
 	cp = ConfigParser.ConfigParser()
 	cp.add_section("list")
 	cp.set("list", "subscription", "free")
 	cp.set("list", "posting", "free")
-        cp.read(os.path.join(os.path.expanduser('~/.enemies-of-carlotta'),
+        cp.read(os.path.join(EOC_DOTDIR,
                              self.listname,
                              'config'))
         return cp

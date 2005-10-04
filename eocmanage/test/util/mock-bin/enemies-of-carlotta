@@ -5,5 +5,8 @@ import sys
 sys.path.insert(0, SHAREDIR)
 
 import eoc, os
-eoc.DOTDIR=os.path.abspath('dot-eoc')
+
+EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
+if EOC_DOTDIR is not None:
+    eoc.DOTDIR=EOC_DOTDIR
 eoc.main(sys.argv[1:])
