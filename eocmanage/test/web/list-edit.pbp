@@ -16,13 +16,20 @@ find "Edit"
 find "Subscription"
 
 #    '<input checked="checked" type="radio" name="subscription" value="free">free</input>'
-find "<input checked=.checked.* name=.subscription. value=.free.>free</input>"
+find '<input checked=.checked. type=.radio. name=.subscription. value=.free.>free</input>'
 #    '<input checked="checked" type="radio" name="posting" value="free">free</input>'
-find "<input checked=.checked.* name=.posting. value=.free.>free</input>"
+find '<input checked=.checked. type=.radio. name=.posting. value=.free.>free</input>'
 formvalue edit subscription +moderated
 formvalue edit posting +auto
 submit edit
 code 200
 
-find "<input checked=.checked.* name=.subscription. value=.moderated.>moderated</input>"
-find "<input checked=.checked.* name=.posting. value=.auto.>auto</input>"
+# changes actually happened
+find '<input checked=.checked. type=.radio. name=.subscription. value=.moderated.>moderated</input>'
+find '<input checked=.checked. type=.radio. name=.posting. value=.auto.>auto</input>'
+
+# and are persistent, too
+go /foo@bar.example.com
+code 200
+find '<input checked=.checked. type=.radio. name=.subscription. value=.moderated.>moderated</input>'
+find '<input checked=.checked. type=.radio. name=.posting. value=.auto.>auto</input>'
