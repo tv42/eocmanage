@@ -71,9 +71,6 @@ try:
             tests.append(testroot)
             continue
         for root, dirs, files in os.walk(testroot):
-            if '_init.pbp' in files:
-                tests.append(os.path.join(root, '_init.pbp'))
-
             dirs[:] = [d for d in dirs
                        if not d.startswith('.')
                        and not d.startswith('_')]
@@ -85,8 +82,6 @@ try:
                     continue
                 if not test.endswith('.pbp'):
                     continue
-                if '_reset.pbp' in files:
-                    l.append(os.path.join(root, '_reset.pbp'))
                 l.append(os.path.join(root, test))
             tests.extend(l)
 
