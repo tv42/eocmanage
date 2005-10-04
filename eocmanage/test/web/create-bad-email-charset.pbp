@@ -1,6 +1,5 @@
 formvalue create name foo!bar@baz
-submit create
+submit
 code 200
 find "Error:"
-# TODO why do I need to escape the single quotes below?
-find "Please only use characters a-zA-Z0-9 and \'@\.\+-\' in email addresses"
+find "Please only use characters a-zA-Z0-9 and '@[.][+]-' in email addresses"

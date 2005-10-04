@@ -14,5 +14,5 @@ def destroy(name):
         else:
             raise
 
-__pbp__ = ['destroy',
+__all__ = ['destroy',
            ]

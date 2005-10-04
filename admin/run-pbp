@@ -90,10 +90,16 @@ try:
                 l.append(os.path.join(root, test))
             tests.extend(l)
 
+    twillEnv = {}
+    twillEnv.update(os.environ)
+    twillEnv['PYTHONPATH'] = ':'.join(['.',
+                                       twillEnv.get('PYTHONPATH', '.')])
     returncode = subprocess.call(args=[
-        os.path.expanduser('pbpscript'),
+        os.path.expanduser('twill-sh'),
+        '--url', 'http://localhost:8080/',
         '--',
-        ] + tests)
+        ] + tests,
+                                 env=twillEnv)
 
     if returncode < 0:
         print >>sys.stderr, "%s: pbp exited with signal %d" % (

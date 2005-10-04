@@ -1,7 +1,6 @@
-pyload eocmanage/test/util/pbputil.py
-do destroy foo@bar.example.com
-go http://localhost:8080/
-code 200
+extend_with eocmanage.test.util.pbputil
+destroy foo@bar.example.com
+reload
 find "Create"
 notfind "foo@bar.example.com"
 formvalue create name foo@bar.example.com
@@ -10,4 +9,4 @@ code 200
 find "foo@bar\.example\.com"
 
 follow foo@bar.example.com
-title "Mailing List foo@bar\.example\.com"
+title "Mailing List foo@bar[.]example[.]com"

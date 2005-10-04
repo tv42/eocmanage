@@ -1,7 +1,6 @@
-pyload eocmanage/test/util/pbputil.py
-do destroy foo@bar.example.com
-go http://localhost:8080/
-code 200
+extend_with eocmanage.test.util.pbputil
+destroy foo@bar.example.com
+reload
 find "Create"
 notfind "foo@bar.example.com"
 formvalue create name foo@bar.example.com
@@ -15,21 +14,19 @@ code 200
 find "Edit"
 find "Subscription"
 
-#    '<input checked="checked" type="radio" name="subscription" value="free">free</input>'
-find '<input checked=.checked. type=.radio. name=.subscription. value=.free.>free</input>'
-#    '<input checked="checked" type="radio" name="posting" value="free">free</input>'
-find '<input checked=.checked. type=.radio. name=.posting. value=.free.>free</input>'
-formvalue edit subscription +moderated
-formvalue edit posting +auto
-submit edit
+find '<input checked="checked" type="radio" name="subscription" value="free">free</input>'
+find '<input checked="checked" type="radio" name="posting" value="free">free</input>'
+formvalue edit subscription moderated
+formvalue edit posting auto
+submit
 code 200
 
 # changes actually happened
-find '<input checked=.checked. type=.radio. name=.subscription. value=.moderated.>moderated</input>'
-find '<input checked=.checked. type=.radio. name=.posting. value=.auto.>auto</input>'
+find '<input checked="checked" type="radio" name="subscription" value="moderated">moderated</input>'
+find '<input checked="checked" type="radio" name="posting" value="auto">auto</input>'
 
 # and are persistent, too
 go /foo@bar.example.com
 code 200
-find '<input checked=.checked. type=.radio. name=.subscription. value=.moderated.>moderated</input>'
-find '<input checked=.checked. type=.radio. name=.posting. value=.auto.>auto</input>'
+find '<input checked="checked" type="radio" name="subscription" value="moderated">moderated</input>'
+find '<input checked="checked" type="radio" name="posting" value="auto">auto</input>'
