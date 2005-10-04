@@ -1,4 +1,4 @@
-extend_with eocmanage.test.util.pbputil
+extend_with eocmanage.test.util.listutil
 destroy foo@bar.example.com
 reload
 find "Create"
