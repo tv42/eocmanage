@@ -67,7 +67,7 @@ try:
 
     tests = []
     for testroot in testroots:
-        if testroot.endswith('.pbp'):
+        if testroot.endswith('.twill'):
             tests.append(testroot)
             continue
         for root, dirs, files in os.walk(testroot):
@@ -80,7 +80,7 @@ try:
                 if (test.startswith('.')
                     or test.startswith('_')):
                     continue
-                if not test.endswith('.pbp'):
+                if not test.endswith('.twill'):
                     continue
                 l.append(os.path.join(root, test))
             tests.extend(l)
@@ -97,11 +97,11 @@ try:
                                  env=twillEnv)
 
     if returncode < 0:
-        print >>sys.stderr, "%s: pbp exited with signal %d" % (
+        print >>sys.stderr, "%s: twill exited with signal %d" % (
             sys.argv[0], -returncode)
         sys.exit(1)
     elif returncode >0:
-        print >>sys.stderr, "%s: pbp exited with code %d" % (
+        print >>sys.stderr, "%s: twill exited with code %d" % (
             sys.argv[0], returncode)
         sys.exit(1)
 
