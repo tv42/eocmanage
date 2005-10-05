@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+export PATH="$PWD/eocmanage/test/util/mock-bin:$PATH"
+export PYTHONPATH=.:~/src/nevow/trunk/:~/src/eoc/trunk/
+export EOC_DOTDIR="$PWD/dot-eoc"
+twistd -noy test.tac
