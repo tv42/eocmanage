@@ -9,8 +9,7 @@ class _MockLogin(object):
     def locateChild(self, ctx, segments):
         address = '/'.join(segments)
         sess = inevow.ISession(ctx)
-        addr = sess.setComponent(common.IAuthenticatedEmailAddress,
-                                 address)
+        sess.setComponent(common.IAuthenticatedEmailAddress, address)
         return static.Data('You are know authenticated as %s' % address,
                            'text/plain'), []
 
