@@ -48,7 +48,7 @@ class MailingListForAdmin(eocinterface.MailingList, rend.Fragment):
     def destroy(self, ctx):
         u = url.URL.fromContext(ctx)
         request = inevow.IRequest(ctx)
-        request.setComponent(iformless.IRedirectAfterPost, u.parentdir())
+        request.setComponent(iformless.IRedirectAfterPost, u.up())
         d = eocinterface.MailingList.destroy(self)
         return d
 
