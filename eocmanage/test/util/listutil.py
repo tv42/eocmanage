@@ -2,7 +2,7 @@ from twisted.trial.util import wait
 import os, shutil, errno
 from eocmanage import eocinterface
 
-def destroy(name):
+def eoc_destroy(name):
     """Destroy list with given name"""
     assert '@' in name
     assert not name.startswith('.')
@@ -23,6 +23,6 @@ def eoc_create(name, *owners):
     d = eocinterface.create(name, owners)
     wait(d)
 
-__all__ = ['destroy',
+__all__ = ['eoc_destroy',
            'eoc_create',
            ]
