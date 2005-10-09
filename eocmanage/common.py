@@ -1,5 +1,8 @@
+from zope.interface import Interface
 import string, email.Utils
+from nevow import context, compy, inevow
 from formless import annotate
+from eocmanage import eocinterface
 
 class EmailAddress(annotate.String):
     required = True
@@ -34,8 +37,55 @@ def render_if(ctx, data):
     r=ctx.tag.allPatterns(str(bool(data)))
     return ctx.tag.clear()[r]
 
+class IEmailAddress(Interface):
+    pass
+
+#TODO get from cookie or session
+# None is special, need to return something else for "not known".
+compy.registerAdapter(lambda _: '',
+                      context.WebContext,
+                      IEmailAddress)
+
+class IAuthenticatedEmailAddress(Interface):
+    pass
+
+def _authenticated(ctx):
+    sess = inevow.ISession(ctx)
+    addr = sess.getComponent(IAuthenticatedEmailAddress)
+    # None is special, need to return something else for "not known".
+    if addr is None:
+        return ''
+    return addr
+compy.registerAdapter(_authenticated,
+                      context.RequestContext,
+                      IAuthenticatedEmailAddress)
+
+ADMINS = ['4dmin@example.com', 'oldbeard@example.net'] #TODO unhardcode
+
+class ICurrentListName(Interface):
+    pass
+# None is special, need to return something else for "not known".
+compy.registerAdapter(lambda _: '',
+                      context.WebContext,
+                      ICurrentListName)
+
+def isAdmin(ctx):
+    address = IAuthenticatedEmailAddress(ctx)
+    return address in ADMINS
+
 def render_ifAdmin(self, ctx, data):
-    return render_if(ctx, True) #TODO unhardcode
+    return render_if(ctx, isAdmin(ctx))
+
+def isOwner(ctx):
+    address = IAuthenticatedEmailAddress(ctx)
+    if not address:
+        return False
+    listname = ICurrentListName(ctx)
+    if not listname:
+        return False
+    thelist = eocinterface.MailingList(listname)
+    owners = thelist.getOwners()
+    return address in owners
 
 def render_ifOwner(self, ctx, data):
-    return render_if(ctx, True) #TODO unhardcode
+    return render_if(ctx, isAdmin(ctx) or isOwner(ctx))

@@ -1,3 +1,9 @@
+go mockauth/login/4dmin@example.com
+code 200
+back
+
+reload
+find "Create"
 formvalue create name ""
 submit
 code 200

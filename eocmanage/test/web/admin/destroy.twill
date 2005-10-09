@@ -1,5 +1,10 @@
+go mockauth/login/4dmin@example.com
+code 200
+back
+
 extend_with eocmanage.test.util.listutil
 eoc_destroy foo@bar.example.com
+
 reload
 find "Create"
 notfind "foo@bar\.example\.com"
@@ -12,6 +17,7 @@ follow "foo@bar\.example\.com"
 title "Mailing List foo@bar[.]example[.]com"
 code 200
 
+find Destroy
 formvalue destroy destroy foo
 submit
 code 200

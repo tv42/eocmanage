@@ -33,7 +33,11 @@
       <nevow:invisible nevow:pattern="True">
 	<h2>List Administration</h2>
 	<div class="eocmanage-owner" nevow:render="form_owner"/>
-	<div class="eocmanage-admin" nevow:render="form_admin"/>
+	<nevow:invisible nevow:render="ifOwner">
+	  <nevow:invisible nevow:pattern="True">
+	    <div class="eocmanage-admin" nevow:render="form_admin"/>
+	  </nevow:invisible>
+	</nevow:invisible>
 
 	<h2>Current Subscribers</h2>
 	<table class="eocmanage-owner" nevow:render="sequence" nevow:data="list">

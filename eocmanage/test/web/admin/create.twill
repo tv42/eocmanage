@@ -1,5 +1,10 @@
+go mockauth/login/4dmin@example.com
+code 200
+back
+
 extend_with eocmanage.test.util.listutil
 eoc_destroy foo@bar.example.com
+
 reload
 find "Create"
 notfind "foo@bar.example.com"

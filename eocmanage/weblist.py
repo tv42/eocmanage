@@ -3,7 +3,7 @@ from zope.interface import implements
 from nevow import inevow, loaders, rend, tags, url
 from formless import iformless, annotate, webform
 from eocmanage import eocinterface, zebra, common
-from eocmanage.common import EmailAddress
+from eocmanage.common import EmailAddress, ICurrentListName
 
 class MailingListForUser(eocinterface.MailingList, rend.Fragment):
     def bind_subscribe(self, ctx):
@@ -60,6 +60,7 @@ class WebMailingList(rend.Page):
     def __init__(self, listname, *a, **kw):
         self.listname = listname
         rend.Page.__init__(self, *a, **kw)
+        self.remember(listname, ICurrentListName)
 
     def data_name(self, ctx, data):
         return self.listname

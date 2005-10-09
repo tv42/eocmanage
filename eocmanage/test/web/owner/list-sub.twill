@@ -1,3 +1,7 @@
+go mockauth/login/pwner@example.com
+code 200
+back
+
 extend_with eocmanage.test.util.listutil
 eoc_destroy foo@bar.example.com
 reload

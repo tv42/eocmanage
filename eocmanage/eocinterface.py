@@ -114,3 +114,7 @@ class MailingList(object):
 
     def destroy(self):
         return self.runEoc('--destroy')
+
+    def getOwners(self):
+        cp = self._getConfig()
+	return cp.get("list", "owners").split()
