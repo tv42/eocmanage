@@ -1,2 +1,2 @@
-go /doesnotexist@example.com
+go doesnotexist@example.com
 code 404

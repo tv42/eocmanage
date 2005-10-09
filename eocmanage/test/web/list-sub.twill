@@ -8,7 +8,7 @@ submit create
 code 200
 find "foo@bar\.example\.com"
 
-go /foo@bar.example.com
+follow "foo@bar\.example\.com"
 find Subscribe
 notfind "jack@smith.example.com"
 find "No subscribers[.]"

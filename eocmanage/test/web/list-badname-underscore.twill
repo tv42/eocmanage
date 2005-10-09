@@ -1,2 +1,2 @@
-go /_foo@bar
+go _foo@bar
 code 404

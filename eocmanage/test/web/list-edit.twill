@@ -8,7 +8,7 @@ submit create
 code 200
 find "foo@bar\.example\.com"
 
-go /foo@bar.example.com
+follow "foo@bar\.example\.com"
 title "Mailing List foo@bar.example.com"
 code 200
 find "Edit"
@@ -26,7 +26,7 @@ find '<input checked="checked" type="radio" name="subscription" value="moderated
 find '<input checked="checked" type="radio" name="posting" value="auto">auto</input>'
 
 # and are persistent, too
-go /foo@bar.example.com
+reload
 code 200
 find '<input checked="checked" type="radio" name="subscription" value="moderated">moderated</input>'
 find '<input checked="checked" type="radio" name="posting" value="auto">auto</input>'
