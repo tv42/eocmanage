@@ -1,5 +1,6 @@
 import os
 from zope.interface import implements
+from twisted.internet import defer
 from nevow import inevow, loaders, rend, tags, url
 from formless import iformless, annotate, webform
 from eocmanage import eocinterface, zebra, common
@@ -10,16 +11,27 @@ class MailingListForUser(eocinterface.MailingList, rend.Fragment):
         return annotate.MethodBinding(
             name='subscribe',
             typeValue=annotate.Method(arguments=[
+                    annotate.Argument('ctx', annotate.Context()),
                     annotate.Argument('address', EmailAddress()),
                     ]),
             action='Subscribe')
+
+    def subscribe(self, ctx, address):
+        common.rememberEmail(ctx, address)
+        return super(MailingListForUser, self).subscribe(address)
+
     def bind_unsubscribe(self, ctx):
         return annotate.MethodBinding(
             name='unsubscribe',
             typeValue=annotate.Method(arguments=[
+                    annotate.Argument('ctx', annotate.Context()),
                     annotate.Argument('address', EmailAddress()),
                     ]),
             action='Unsubscribe')
+
+    def unsubscribe(self, ctx, address):
+        common.rememberEmail(ctx, address)
+        return super(MailingListForUser, self).unsubscribe(address)
 
 class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
     def bind_edit(self, ctx):
@@ -69,9 +81,35 @@ class WebMailingList(rend.Page):
         return MailingListForUser(self.listname)
 
     def render_form_user(self, ctx, data):
-        return ctx.tag[
-            webform.renderForms('user'),
-            ]
+        d = self.locateConfigurable(ctx, 'user')
+        def _gotConfigurable(cf, ctx):
+            address = common.IEmailAddress(ctx)
+            bindingDefaults = {}
+            bindingDefaults.setdefault('subscribe', {})
+            bindingDefaults.setdefault('unsubscribe', {})
+            if not address:
+                d = defer.succeed(bindingDefaults)
+            else:
+                # TODO want __contains__, not iteration of everything
+                d=cf.list()
+                def _gotMembers(subs, bindingDefaults):
+                    if address not in subs:
+                        bindingDefaults['subscribe']['address'] = address
+                    else:
+                        bindingDefaults['unsubscribe']['address'] = address
+                    return bindingDefaults
+                d.addCallback(_gotMembers, bindingDefaults)
+            return d
+        d.addCallback(_gotConfigurable, ctx)
+
+        def _gotDefaults(bindingDefaults, ctx):
+            return ctx.tag[
+                webform.renderForms('user',
+                                    bindingDefaults=bindingDefaults,
+                                    ),
+                ]
+        d.addCallback(_gotDefaults, ctx)
+        return d
 
     def configurable_owner(self, ctx):
         return MailingListForOwner(self.listname)

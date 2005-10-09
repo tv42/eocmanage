@@ -1,5 +1,6 @@
 from zope.interface import Interface
-import string, email.Utils
+import string, email.Utils, time
+from twisted.web import http
 from nevow import context, compy, inevow
 from formless import annotate
 from eocmanage import eocinterface
@@ -42,8 +43,38 @@ class IEmailAddress(Interface):
 
 #TODO get from cookie or session
 # None is special, need to return something else for "not known".
-compy.registerAdapter(lambda _: '',
-                      context.WebContext,
+
+COOKIE_KEY = 'eocmanage_email'
+
+def rememberEmail(ctx, address):
+    remembered = IEmailAddress(ctx)
+    if remembered != address:
+        request = inevow.IRequest(ctx)
+        expires = http.datetimeToString(time.time() + 60*60*24*365)
+        request.addCookie(COOKIE_KEY, address,
+                          path="/", #TODO path="/%s" % '/'.join(request.prepath),
+                          ##TODO secure=False,
+                          expires=expires)
+
+def _remembered(ctx):
+    authenticated = IAuthenticatedEmailAddress(ctx)
+    if authenticated:
+        return authenticated
+    request = inevow.IRequest(ctx)
+    try:
+        unsafe = request.getCookie(COOKIE_KEY)
+    except KeyError:
+        return ''
+    try:
+        address = EmailAddress().coerce(unsafe, None)
+    except annotate.InputError:
+        return ''
+    except annotate.ValidateError:
+        return ''
+    return address
+
+compy.registerAdapter(_remembered,
+                      context.RequestContext,
                       IEmailAddress)
 
 class IAuthenticatedEmailAddress(Interface):
