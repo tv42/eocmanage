@@ -1,8 +1,9 @@
+from twisted.trial.util import wait
 import os, shutil, errno
+from eocmanage import eocinterface
 
 def destroy(name):
     """Destroy list with given name"""
-    print 'DESTROY', repr(name)
     assert '@' in name
     assert not name.startswith('.')
     path = os.path.join('dot-eoc', name)
@@ -14,5 +15,14 @@ def destroy(name):
         else:
             raise
 
+def eoc_create(name, *owners):
+    """Create list with given name"""
+    assert '@' in name
+    assert not name.startswith('.')
+    path = os.path.join('dot-eoc', name)
+    d = eocinterface.create(name, owners)
+    wait(d)
+
 __all__ = ['destroy',
+           'eoc_create',
            ]

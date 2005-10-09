@@ -1,11 +1,10 @@
 extend_with eocmanage.test.util.listutil
 destroy foo@bar.example.com
 reload
-find "Create"
-notfind "foo@bar.example.com"
-formvalue create name foo@bar.example.com
-submit create
-code 200
+notfind "foo@bar\.example\.com"
+
+eoc_create foo@bar.example.com pwner@example.com pwnstoo@example.com
+reload
 find "foo@bar\.example\.com"
 
 follow "foo@bar\.example\.com"
