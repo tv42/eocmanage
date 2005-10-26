@@ -9,6 +9,33 @@ from eocmanage.common import EmailAddress
 class MailingListForUser(eocinterface.MailingList, rend.Fragment):
     def bind_subscribe(self, ctx):
         return annotate.MethodBinding(
+            name='requestSubscribe',
+            typeValue=annotate.Method(arguments=[
+                    annotate.Argument('ctx', annotate.Context()),
+                    annotate.Argument('address', EmailAddress()),
+                    ]),
+            action='Subscribe')
+
+    def requestSubscribe(self, ctx, address):
+        common.rememberEmail(ctx, address)
+        return super(MailingListForUser, self).requestSubscribe(address)
+
+    def bind_unsubscribe(self, ctx):
+        return annotate.MethodBinding(
+            name='requestUnsubscribe',
+            typeValue=annotate.Method(arguments=[
+                    annotate.Argument('ctx', annotate.Context()),
+                    annotate.Argument('address', EmailAddress()),
+                    ]),
+            action='Unsubscribe')
+
+    def requestUnsubscribe(self, ctx, address):
+        common.rememberEmail(ctx, address)
+        return super(MailingListForUser, self).requestUnsubscribe(address)
+
+class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
+    def bind_subscribe(self, ctx):
+        return annotate.MethodBinding(
             name='subscribe',
             typeValue=annotate.Method(arguments=[
                     annotate.Argument('ctx', annotate.Context()),
@@ -18,7 +45,7 @@ class MailingListForUser(eocinterface.MailingList, rend.Fragment):
 
     def subscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        return super(MailingListForUser, self).subscribe(address)
+        return super(MailingListForOwner, self).subscribe(address)
 
     def bind_unsubscribe(self, ctx):
         return annotate.MethodBinding(
@@ -31,9 +58,8 @@ class MailingListForUser(eocinterface.MailingList, rend.Fragment):
 
     def unsubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        return super(MailingListForUser, self).unsubscribe(address)
+        return super(MailingListForOwner, self).unsubscribe(address)
 
-class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
     def bind_edit(self, ctx):
         return annotate.MethodBinding(
             name='edit',
@@ -119,6 +145,8 @@ class WebMailingList(rend.Page):
         def _cb(cf, ctx):
             bindingDefaults = {}
             bindingDefaults.setdefault('edit', {})
+            bindingDefaults.setdefault('subscribe', {})
+            bindingDefaults.setdefault('unsubscribe', {})
             bindingDefaults['edit']['subscription'] = cf.getSubscription()
             bindingDefaults['edit']['posting'] = cf.getPosting()
             return ctx.tag[
