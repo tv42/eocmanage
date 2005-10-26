@@ -121,6 +121,24 @@ class MailingList(object):
             '--',
             address)
 
+    def requestSubscribe(self, address):
+        env = {}
+        env.update(os.environ)
+        env['SENDER'] = address
+
+        return self.messageToEoc(command='subscribe',
+                                 message='TODO',
+                                 env=env)
+
+    def requestUnsubscribe(self, address):
+        env = {}
+        env.update(os.environ)
+        env['SENDER'] = address
+
+        return self.messageToEoc(command='unsubscribe',
+                                 message='TODO',
+                                 env=env)
+
     def list(self):
         d = self.runEoc('--list')
         def _cb(s):
