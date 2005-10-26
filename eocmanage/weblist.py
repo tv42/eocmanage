@@ -141,5 +141,6 @@ class WebMailingList(rend.Page):
         return eocinterface.MailingList(self.listname).list()
 
     render_ifOwner = common.render_ifOwner
+    render_ifAdmin = common.render_ifAdmin
 
     render_zebra = zebra.zebra()
