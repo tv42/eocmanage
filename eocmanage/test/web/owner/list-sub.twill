@@ -18,10 +18,14 @@ find "No subscribers[.]"
 formvalue subscribe address jack@smith.example.com
 submit subscribe
 code 200
-find "jack@smith\.example\.com"
+find "Subscribed jack@smith[.]example[.]com[.]"
 notfind "No subscribers[.]"
+reload		# get rid of status message
+find "jack@smith\.example\.com"
 formvalue unsubscribe address jack@smith.example.com
 submit unsubscribe
 code 200
-notfind "jack@smith.example.com"
+find "Unsubscribed jack@smith[.]example[.]com[.]"
+reload		# get rid of status message
+notfind "jack@smith\.example\.com"
 find "No subscribers[.]"

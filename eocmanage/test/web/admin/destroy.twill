@@ -11,6 +11,8 @@ notfind "foo@bar\.example\.com"
 formvalue create name foo@bar.example.com
 submit
 code 200
+find "Created list foo@bar[.]example[.]com"
+reload		# get rid of status message
 find "foo@bar\.example\.com"
 
 follow "foo@bar\.example\.com"
@@ -22,4 +24,6 @@ formvalue destroy destroy foo
 submit
 code 200
 title "Overview of Mailing Lists"
+find "Destroyed list foo@bar[.]example[.]com[.]"
+reload		# get rid of status message
 notfind "foo@bar\.example\.com"

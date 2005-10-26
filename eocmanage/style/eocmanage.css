@@ -10,10 +10,12 @@ h2 {
 
 .zebra-even {
  background-color: #edf3fe;
+ text-color: black;
 }
 
 .zebra-odd {
  background-color: #ffffff;
+ text-color: black;
 }
 
 /* undo freeform uglies */
@@ -30,4 +32,18 @@ h2 {
 
 table {
  width: 100%;
+}
+
+.statusmessage {
+ font-size: 120%;
+ text-color: black;
+ background-color: #FFF1D1;
+ border: 1px solid #cccccc;
+ width: 40%;
+ margin-left: 5%;
+ margin-right: auto;
+ padding-left: 0.5em;
+ padding-right: 0.5em;
+ padding-top: 0.1em;
+ padding-bottom: 0.1em;
 }

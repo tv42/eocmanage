@@ -56,9 +56,11 @@ class EocManage(rend.Page):
 
     def create(self, name):
         d = eocinterface.create(name, ['TODO'])
+        d.addCallback(common.statusPrefix, 'Created list %s' % name)
         d.addErrback(self._createFailed, name)
         return d
 
     render_ifAdmin = common.render_ifAdmin
 
     render_zebra = zebra.zebra()
+    render_statusmessage = common.render_statusmessage

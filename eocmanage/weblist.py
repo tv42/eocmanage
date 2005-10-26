@@ -18,7 +18,10 @@ class MailingListForUser(eocinterface.MailingList, rend.Fragment):
 
     def requestSubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        return super(MailingListForUser, self).requestSubscribe(address)
+        d = super(MailingListForUser, self).requestSubscribe(address)
+        d.addCallback(common.statusPrefix,
+                      'Subscription confirmation request sent to %s' % address)
+        return d
 
     def bind_unsubscribe(self, ctx):
         return annotate.MethodBinding(
@@ -31,7 +34,11 @@ class MailingListForUser(eocinterface.MailingList, rend.Fragment):
 
     def requestUnsubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        return super(MailingListForUser, self).requestUnsubscribe(address)
+        d = super(MailingListForUser, self).requestUnsubscribe(address)
+        d.addCallback(common.statusPrefix,
+                      'Unsubscription confirmation request sent to %s' %
+                      address)
+        return d
 
 class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
     def bind_subscribe(self, ctx):
@@ -45,7 +52,9 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
 
     def subscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        return super(MailingListForOwner, self).subscribe(address)
+        d = super(MailingListForOwner, self).subscribe(address)
+        d.addCallback(common.statusPrefix, 'Subscribed %s' % address)
+        return d
 
     def bind_unsubscribe(self, ctx):
         return annotate.MethodBinding(
@@ -58,7 +67,9 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
 
     def unsubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        return super(MailingListForOwner, self).unsubscribe(address)
+        d = super(MailingListForOwner, self).unsubscribe(address)
+        d.addCallback(common.statusPrefix, 'Unsubscribed %s' % address)
+        return d
 
     def bind_edit(self, ctx):
         return annotate.MethodBinding(
@@ -74,6 +85,36 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
             ]),
             action='Edit')
 
+    def edit(self, **kw):
+        old = {
+            'subscription': self.getSubscription(),
+            'posting': self.getPosting(),
+            }
+        for k,v in kw.items():
+            oldVal = old.get(k, None)
+            if (oldVal is not None
+                and oldVal == v):
+                # not changed
+                del kw[k]
+
+        if not kw:
+            return 'Settings not changed.'
+
+        def status(kw, old):
+            keys = kw.keys()
+            keys.sort()
+            for k in keys:
+                yield 'changed %(key)s from %(old)s to %(new)s' % {
+                    'key': k,
+                    'old': old.get(k, None),
+                    'new': kw.get(k, None),
+                    }
+        d = super(MailingListForOwner, self).edit(**kw)
+        d.addCallback(common.statusPrefix, 'Edited settings: %(edits)s' % {
+            'edits': ', '.join(status(kw, old)),
+            })
+        return d
+
 class MailingListForAdmin(eocinterface.MailingList, rend.Fragment):
     def bind_destroy(self, ctx):
         return annotate.MethodBinding(
@@ -88,6 +129,7 @@ class MailingListForAdmin(eocinterface.MailingList, rend.Fragment):
         request = inevow.IRequest(ctx)
         request.setComponent(iformless.IRedirectAfterPost, u.curdir())
         d = eocinterface.MailingList.destroy(self)
+        d.addCallback(common.statusPrefix, 'Destroyed list %s' % self.listname)
         return d
 
 class WebMailingList(rend.Page):
@@ -172,3 +214,5 @@ class WebMailingList(rend.Page):
     render_ifAdmin = common.render_ifAdmin
 
     render_zebra = zebra.zebra()
+    render_statusmessage = common.render_statusmessage
+

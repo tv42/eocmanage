@@ -11,4 +11,6 @@ notfind "foo@bar.example.com"
 formvalue create name foo@bar.example.com
 submit create
 code 200
+find "Created list foo@bar[.]example[.]com[.]"
+reload		# get rid of status message
 find "foo@bar\.example\.com"

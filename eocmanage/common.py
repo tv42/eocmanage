@@ -1,7 +1,7 @@
 from zope.interface import Interface
 import string, email.Utils, time
 from twisted.web import http
-from nevow import context, compy, inevow
+from nevow import context, compy, inevow, tags
 from formless import annotate
 from eocmanage import eocinterface
 
@@ -120,3 +120,15 @@ def isOwner(ctx):
 
 def render_ifOwner(self, ctx, data):
     return render_if(ctx, isAdmin(ctx) or isOwner(ctx))
+
+def render_statusmessage(self, ctx, data):
+    try:
+        status = inevow.IStatusMessage(ctx)
+    except compy.CannotAdapt:
+        return ctx.tag
+    return ctx.tag.clear()[tags.div(class_='statusmessage')[status]]
+
+def statusPrefix(orig, msg):
+    if orig:
+        msg = '%s: %s' % (msg, orig)
+    return '%s.' % msg
