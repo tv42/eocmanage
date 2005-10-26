@@ -41,7 +41,13 @@ os.environ['PATH'] = ':'.join([os.path.join(os.getcwd(),
                                os.environ['PATH']])
 
 os.environ['EOC_DOTDIR'] = os.path.abspath('dot-eoc')
-shutil.rmtree('dot-eoc')
+try:
+    shutil.rmtree('dot-eoc')
+except OSError, e:
+    if e.errno == errno.ENOENT:
+        pass
+    else:
+        raise
 os.mkdir('dot-eoc')
 
 twistdEnv = {}
