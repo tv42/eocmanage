@@ -108,6 +108,16 @@ def eoc_confirm_sub_accept(name, address):
     """
     return _eoc_confirm_subunsub_accept('subscribe', name, address)
 
+def eoc_is_subscriber(name, address, want):
+    assert '@' in name
+    assert not name.startswith('.')
+    l = eocinterface.MailingList(name)
+    d = l.list()
+    subscribers = wait(d)
+    got = address in subscribers
+    assert str(got) == str(want), "%r is subscriber: %s, wanted %s" % (
+        address, got, want)
+
 
 def eoc_confirm_unsub_accept(name, address):
     """
@@ -120,4 +130,5 @@ __all__ = ['eoc_destroy',
            'eoc_create',
            'eoc_confirm_sub_accept',
            'eoc_confirm_unsub_accept',
+           'eoc_is_subscriber',
            ]
