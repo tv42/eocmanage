@@ -1,0 +1,37 @@
+go mockauth/login/pwner@example.com
+code 200
+back
+
+extend_with eocmanage.test.util.listutil
+eoc_destroy foo@bar.example.com
+reload
+notfind "foo@bar\.example\.com"
+
+eoc_create foo@bar.example.com pwner@example.com pwnstoo@example.com
+reload
+find "foo@bar\.example\.com"
+
+follow "foo@bar\.example\.com"
+title "Mailing List foo@bar.example.com"
+code 200
+find "Edit"
+find "Subscription"
+
+find '<input id="edit-mailOnSubscriptionChanges" type="checkbox" class="freeform-input-checkbox" value="True" name="mailOnSubscriptionChanges" />'
+find '<input id="edit-mailOnForcedUnsubscribe" type="checkbox" class="freeform-input-checkbox" value="True" name="mailOnForcedUnsubscribe" />'
+formvalue edit mailOnSubscriptionChanges True
+formvalue edit mailOnForcedUnsubscribe True
+submit
+code 200
+#TODO don't show raw variable names
+find "Edited settings: changed mailOnForcedUnsubscribe from False to True, changed mailOnSubscriptionChanges from False to True[.]"
+
+# changes actually happened
+find '<input checked="checked" name="mailOnSubscriptionChanges" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mailOnSubscriptionChanges" />'
+find '<input checked="checked" name="mailOnForcedUnsubscribe" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mailOnForcedUnsubscribe" />'
+
+# and are persistent, too
+reload
+code 200
+find '<input checked="checked" name="mailOnSubscriptionChanges" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mailOnSubscriptionChanges" />'
+find '<input checked="checked" name="mailOnForcedUnsubscribe" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mailOnForcedUnsubscribe" />'

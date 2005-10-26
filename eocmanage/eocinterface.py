@@ -160,6 +160,24 @@ class MailingList(object):
                              'config'))
         return cp
 
+    def _editConfig(self, **kw):
+        # TODO going too much under the hood
+        cp = self._getConfig()
+
+        for k,v in kw.items():
+            cp.set("list", k, v)
+
+        EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
+        if EOC_DOTDIR is None:
+            EOC_DOTDIR = os.path.expanduser('~/.enemies-of-carlotta')
+        filename = os.path.join(EOC_DOTDIR,
+                                self.listname,
+                                'config')
+        f = file('%s.tmp' % filename, 'w')
+        cp.write(f)
+        f.close()
+        os.rename('%s.tmp' % filename, filename)
+
     def getSubscription(self):
         cp = self._getConfig()
 	return cp.get("list", "subscription")
@@ -168,13 +186,48 @@ class MailingList(object):
         cp = self._getConfig()
 	return cp.get("list", "posting")
 
-    def edit(self, **kw):
-        args = ['--edit']
+    def getMailOnSubscriptionChanges(self):
+        cp = self._getConfig()
+	r = cp.get("list", "mail-on-subscription-changes")
+        return r == 'yes'
+
+    def getMailOnForcedUnsubscribe(self):
+        cp = self._getConfig()
+	r = cp.get("list", "mail-on-forced-unsubscribe")
+        return r == 'yes'
+
+    def _edit(self, **kw):
+        rawEdit = {}
+        for var, iniName in [
+            ('mailOnSubscriptionChanges',
+             'mail-on-subscription-changes'),
+            ('mailOnForcedUnsubscribe',
+             'mail-on-forced-unsubscribe'),
+            ]:
+            val = kw.pop(var, None)
+            if val is not None:
+                if val:
+                    val = 'yes'
+                else:
+                    val = 'no'
+                rawEdit[iniName] = val
+        if rawEdit:
+            self._editConfig(**rawEdit)
+
+        args = []
         for var in ['subscription', 'posting']:
             val = kw.pop(var, None)
             if val is not None:
                 args.extend(['--%s' % var, val])
-        return self.runEoc(*args)
+        if kw:
+            raise RuntimeError, 'Unhandled eoc configuration items: %r' % kw
+
+        if args:
+            args.insert(0, '--edit')
+            return self.runEoc(*args)
+
+    def edit(self, **kw):
+        return defer.maybeDeferred(self._edit, **kw)
 
     def destroy(self):
         return self.runEoc('--destroy')

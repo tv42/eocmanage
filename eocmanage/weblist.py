@@ -82,6 +82,10 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
                               annotate.Radio(choices=['free',
                                                       'auto',
                                                       'moderated'])),
+            annotate.Argument('mailOnSubscriptionChanges',
+                              annotate.Boolean()),
+            annotate.Argument('mailOnForcedUnsubscribe',
+                              annotate.Boolean()),
             ]),
             action='Edit')
 
@@ -89,6 +93,8 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
         old = {
             'subscription': self.getSubscription(),
             'posting': self.getPosting(),
+            'mailOnSubscriptionChanges': self.getMailOnSubscriptionChanges(),
+            'mailOnForcedUnsubscribe': self.getMailOnForcedUnsubscribe(),
             }
         for k,v in kw.items():
             oldVal = old.get(k, None)
@@ -191,6 +197,8 @@ class WebMailingList(rend.Page):
             bindingDefaults.setdefault('unsubscribe', {})
             bindingDefaults['edit']['subscription'] = cf.getSubscription()
             bindingDefaults['edit']['posting'] = cf.getPosting()
+            bindingDefaults['edit']['mailOnSubscriptionChanges'] = cf.getMailOnSubscriptionChanges()
+            bindingDefaults['edit']['mailOnForcedUnsubscribe'] = cf.getMailOnForcedUnsubscribe()
             return ctx.tag[
                 webform.renderForms('owner',
                                     bindingDefaults=bindingDefaults,
