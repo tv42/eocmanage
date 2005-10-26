@@ -1,5 +1,6 @@
 import os, ConfigParser
-from twisted.internet import utils
+from cStringIO import StringIO
+from twisted.internet import utils, protocol, defer, reactor
 
 class EocFailed(Exception):
     """Calling eoc failed"""
@@ -15,11 +16,43 @@ class EocFailed(Exception):
             self.err,
             )
 
-def _runEoc(*args):
-    d = utils.getProcessOutputAndValue(
-        executable='enemies-of-carlotta',
-        args=args,
-        env=os.environ)
+class _GetEocResult(protocol.ProcessProtocol):
+
+    def __init__(self, deferred, stdin):
+        self.deferred = deferred
+        self.stdin = stdin
+
+        self.outBuf = StringIO()
+        self.errBuf = StringIO()
+        self.outReceived = self.outBuf.write
+        self.errReceived = self.errBuf.write
+
+    def connectionMade(self):
+        protocol.ProcessProtocol.connectionMade(self)
+        if self.stdin is not None:
+            self.transport.write(self.stdin)
+        self.transport.closeStdin()
+
+    def processEnded(self, reason):
+        out = self.outBuf.getvalue()
+        err = self.errBuf.getvalue()
+        e = reason.value
+        code = e.exitCode
+        if e.signal:
+            self.deferred.errback((out, err, e.signal))
+        else:
+            self.deferred.callback((out, err, code))
+
+def _runEoc(*args, **kwargs):
+    kwargs.setdefault('env', os.environ)
+    stdin = kwargs.pop('stdin', None)
+    d = defer.Deferred()
+    p = _GetEocResult(d, stdin)
+    EXECUTABLE='enemies-of-carlotta'
+    reactor.spawnProcess(p,
+                         executable=EXECUTABLE,
+                         args=(EXECUTABLE,)+tuple(args),
+                         **kwargs)
     def _cb((out, err, code)):
         if code != 0:
             raise EocFailed, (code, err)
@@ -47,8 +80,21 @@ class MailingList(object):
     def __init__(self, listname):
         self.listname = listname
 
-    def runEoc(self, *args):
-        return _runEoc('--name', self.listname, *args)
+    def runEoc(self, *args, **kwargs):
+        return _runEoc('--name', self.listname, *args, **kwargs)
+
+    def messageToEoc(self, *args, **kwargs):
+        message = kwargs.pop('message')
+
+        name = self.listname
+        command = kwargs.pop('command', None)
+        if command is not None:
+            local, domain = name.split('@', 1)
+            name = '%s-%s@%s' % (local, command, domain)
+
+        kwargs.get('env', {}).setdefault('RECIPIENT', name)
+        return _runEoc('--name', self.listname, '--incoming',
+                       stdin=message, *args, **kwargs)
 
     def exists(self):
         d = self.runEoc('--is-list')
