@@ -1,0 +1,44 @@
+go mockauth/login/
+code 200
+back
+
+extend_with eocmanage.test.util.listutil
+eoc_destroy foo@bar.example.com
+reload
+notfind "foo@bar\.example\.com"
+
+eoc_create foo@bar.example.com pwner@example.com pwnstoo@example.com
+reload
+find "foo@bar\.example\.com"
+
+follow "foo@bar\.example\.com"
+find Subscribe
+notfind "jack@smith\.example\.com"
+eoc_is_subscriber foo@bar.example.com jack@smith.example.com False
+
+formvalue subscribe address jack@smith.example.com
+submit subscribe
+code 200
+# not subscribed before confirmation is sent
+eoc_is_subscriber foo@bar.example.com jack@smith.example.com False
+# address was remembered
+find "jack@smith\.example\.com"
+# status message
+#TODO find "A confirmation message has beent sent"
+
+eoc_confirm_sub_accept foo@bar.example.com jack@smith.example.com
+eoc_is_subscriber foo@bar.example.com jack@smith.example.com True
+
+reload
+formvalue unsubscribe requestUnsubscribe foo
+submit unsubscribe
+code 200
+# not unsubscribed before confirmation is sent
+eoc_is_subscriber foo@bar.example.com jack@smith.example.com True
+# address was remembered
+find "jack@smith\.example\.com"
+# status message
+#TODO find "A confirmation message has beent sent"
+
+eoc_confirm_unsub_accept foo@bar.example.com jack@smith.example.com
+eoc_is_subscriber foo@bar.example.com jack@smith.example.com False
