@@ -19,7 +19,6 @@ def eoc_create(name, *owners):
     """Create list with given name"""
     assert '@' in name
     assert not name.startswith('.')
-    path = os.path.join('dot-eoc', name)
     d = eocinterface.create(name, owners)
     wait(d)
 
