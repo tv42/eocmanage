@@ -17,19 +17,19 @@
       <a><nevow:attr name="href">mailto:<nevow:invisible nevow:render="string" nevow:data="name"/></nevow:attr><nevow:invisible nevow:render="string" nevow:data="name"/></a>.
     </p>
 
-    <h2>Subscribing to the List</h2>
-    <p>
-      To subscribe or unsubscribe, type your address and press the
-      corresponding button.
-
-      As extra protection, you will be sent an email, and the action
-      will only be performed <em>after</em> you have confirmed it by
-      replying to the message.
-    </p>
-
-    <div class="eocmanage-user" nevow:render="form_user"/>
-
     <nevow:invisible nevow:render="ifOwner">
+      <nevow:invisible nevow:pattern="False">
+	<h2>Subscribing to the List</h2>
+	<p>
+	  To subscribe or unsubscribe, type your address and press the
+	  corresponding button.
+
+	  As extra protection, you will be sent an email, and the action
+	  will only be performed <em>after</em> you have confirmed it by
+	  replying to the message.
+	</p>
+	<div class="eocmanage-user" nevow:render="form_user"/>
+      </nevow:invisible>
       <nevow:invisible nevow:pattern="True">
 	<h2>List Administration</h2>
 	<div class="eocmanage-owner" nevow:render="form_owner"/>
