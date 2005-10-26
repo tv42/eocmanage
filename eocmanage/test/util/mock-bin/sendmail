@@ -1,0 +1,38 @@
+#!/usr/bin/python
+import os, sys, errno
+
+EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
+if EOC_DOTDIR is None:
+    print >>sys.stderr, "%s: need to set EOC_DOTDIR." % sys.argv[0]
+
+path = os.path.join(EOC_DOTDIR, 'sent-mail')
+try:
+    os.mkdir(path)
+except OSError, e:
+    if e.errno == errno.EEXIST:
+        pass
+    else:
+        raise
+
+tmp = os.path.join(path, '%d.tmp' % os.getpid())
+out = file(tmp, 'w')
+
+print >>out, repr(sys.argv[1:])
+print >>out
+out.write(sys.stdin.read())
+out.close()
+
+i = 1
+while True:
+    try:
+        os.link(tmp, os.path.join(path, '%d' % i))
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            pass
+        else:
+            raise
+    else:
+        os.unlink(tmp)
+        break
+
+    i += 1

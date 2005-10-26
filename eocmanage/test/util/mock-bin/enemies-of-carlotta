@@ -9,4 +9,7 @@ import eoc, os
 EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
 if EOC_DOTDIR is not None:
     eoc.DOTDIR=EOC_DOTDIR
-eoc.main(sys.argv[1:])
+
+SENDMAIL = os.path.join(os.path.split(__file__)[0], 'sendmail')
+
+eoc.main(['--sendmail', SENDMAIL] + sys.argv[1:])
