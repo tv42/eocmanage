@@ -90,12 +90,19 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
             action='Edit')
 
     def edit(self, **kw):
-        old = {
-            'subscription': self.getSubscription(),
-            'posting': self.getPosting(),
-            'mailOnSubscriptionChanges': self.getMailOnSubscriptionChanges(),
-            'mailOnForcedUnsubscribe': self.getMailOnForcedUnsubscribe(),
-            }
+        d = self.getConfig('subscription', 'posting',
+                           'mail-on-subscription-changes',
+                           'mail-on-forced-unsubscribe')
+        d.addCallback(self.__edit, **kw)
+        return d
+
+    def __edit(self, cfg, **kw):
+        old = {}
+        (old['subscription'],
+         old['posting'],
+         old['mailOnSubscriptionChanges'],
+         old['mailOnForcedUnsubscribe']) = cfg
+
         for k,v in kw.items():
             oldVal = old.get(k, None)
             if (oldVal is not None
@@ -190,15 +197,25 @@ class WebMailingList(rend.Page):
 
     def render_form_owner(self, ctx, data):
         d = self.locateConfigurable(ctx, 'owner')
-        def _cb(cf, ctx):
+        def _gotConfigurable(cf):
+            d = cf.getConfig('subscription',
+                             'posting',
+                             'mail-on-subscription-changes',
+                             'mail-on-forced-unsubscribe')
+            return d
+        d.addCallback(_gotConfigurable)
+
+        def _cb(cfg, ctx):
             bindingDefaults = {}
             bindingDefaults.setdefault('edit', {})
             bindingDefaults.setdefault('subscribe', {})
             bindingDefaults.setdefault('unsubscribe', {})
-            bindingDefaults['edit']['subscription'] = cf.getSubscription()
-            bindingDefaults['edit']['posting'] = cf.getPosting()
-            bindingDefaults['edit']['mailOnSubscriptionChanges'] = cf.getMailOnSubscriptionChanges()
-            bindingDefaults['edit']['mailOnForcedUnsubscribe'] = cf.getMailOnForcedUnsubscribe()
+            (bindingDefaults['edit']['subscription'],
+             bindingDefaults['edit']['posting'],
+             bindingDefaults['edit']['mailOnSubscriptionChanges'],
+             bindingDefaults['edit']['mailOnForcedUnsubscribe'],
+             ) = cfg
+
             return ctx.tag[
                 webform.renderForms('owner',
                                     bindingDefaults=bindingDefaults,

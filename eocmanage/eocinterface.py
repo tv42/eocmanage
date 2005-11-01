@@ -1,4 +1,4 @@
-import os, ConfigParser
+import os, sets
 from cStringIO import StringIO
 from twisted.internet import utils, protocol, defer, reactor
 
@@ -48,10 +48,12 @@ def _runEoc(*args, **kwargs):
     stdin = kwargs.pop('stdin', None)
     d = defer.Deferred()
     p = _GetEocResult(d, stdin)
-    EXECUTABLE='enemies-of-carlotta'
+    executable = kwargs.pop('executable', None)
+    if executable is None:
+        executable = 'enemies-of-carlotta'
     reactor.spawnProcess(p,
-                         executable=EXECUTABLE,
-                         args=(EXECUTABLE,)+tuple(args),
+                         executable=executable,
+                         args=(executable,)+tuple(args),
                          **kwargs)
     def _cb((out, err, code)):
         if code != 0:
@@ -95,6 +97,62 @@ class MailingList(object):
         kwargs.get('env', {}).setdefault('RECIPIENT', name)
         return _runEoc('--name', self.listname, '--incoming',
                        stdin=message, *args, **kwargs)
+
+    _CFG_BOOLEANS = sets.ImmutableSet(['mail-on-subscription-changes',
+                                       'mail-on-forced-unsubscribe'])
+
+    def _cfgSerialize(self, item, value):
+        if item in self._CFG_BOOLEANS:
+            if value:
+                return 'yes'
+            else:
+                return 'no'
+        else:
+            return value
+
+    def _cfgUnserialize(self, item, value):
+        if item in self._CFG_BOOLEANS:
+            if value == 'yes':
+                return True
+            else:
+                return False
+        else:
+            return value
+
+    def getConfig(self, *items):
+        d = _runEoc('--',
+                    self.listname,
+                    'get',
+                    executable='eocmanage-config',
+                    *items)
+        def _cb(output, items):
+            values = output.splitlines()
+            if len(values) != len(items):
+                raise RuntimeError('Config result does not match requested items %r: %r' % (items, output))
+
+            values = [self._cfgUnserialize(item, value)
+                      for item, value in zip(items, values)]
+
+            if len(values) == 1:
+                return values[0]
+            else:
+                return values
+        d.addCallback(_cb, items)
+        return d
+
+    def setConfig(self, **kw):
+        args = []
+        for k,v in kw.items():
+            if '=' in k:
+                raise RuntimeError('Invalid configuration item: %r' % k)
+            v = self._cfgSerialize(k, v)
+            args.append('%s=%s' % (k, v))
+        d = _runEoc('--',
+                    self.listname,
+                    'set',
+                    executable='eocmanage-config',
+                    *args)
+        return d
 
     def exists(self):
         d = self.runEoc('--is-list')
@@ -146,57 +204,8 @@ class MailingList(object):
         d.addCallback(_cb)
         return d
 
-    def _getConfig(self):
-        # TODO going too much under the hood
-        EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
-        if EOC_DOTDIR is None:
-            EOC_DOTDIR = os.path.expanduser('~/.enemies-of-carlotta')
-	cp = ConfigParser.ConfigParser()
-	cp.add_section("list")
-	cp.set("list", "subscription", "free")
-	cp.set("list", "posting", "free")
-        cp.read(os.path.join(EOC_DOTDIR,
-                             self.listname,
-                             'config'))
-        return cp
-
-    def _editConfig(self, **kw):
-        # TODO going too much under the hood
-        cp = self._getConfig()
-
-        for k,v in kw.items():
-            cp.set("list", k, v)
-
-        EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
-        if EOC_DOTDIR is None:
-            EOC_DOTDIR = os.path.expanduser('~/.enemies-of-carlotta')
-        filename = os.path.join(EOC_DOTDIR,
-                                self.listname,
-                                'config')
-        f = file('%s.tmp' % filename, 'w')
-        cp.write(f)
-        f.close()
-        os.rename('%s.tmp' % filename, filename)
-
-    def getSubscription(self):
-        cp = self._getConfig()
-	return cp.get("list", "subscription")
-
-    def getPosting(self):
-        cp = self._getConfig()
-	return cp.get("list", "posting")
-
-    def getMailOnSubscriptionChanges(self):
-        cp = self._getConfig()
-	r = cp.get("list", "mail-on-subscription-changes")
-        return r == 'yes'
-
-    def getMailOnForcedUnsubscribe(self):
-        cp = self._getConfig()
-	r = cp.get("list", "mail-on-forced-unsubscribe")
-        return r == 'yes'
-
-    def _edit(self, **kw):
+    def __edit_ini(self, kw):
+        """Note: mutates kw, it's not a **kwargs."""
         rawEdit = {}
         for var, iniName in [
             ('mailOnSubscriptionChanges',
@@ -212,26 +221,37 @@ class MailingList(object):
                     val = 'no'
                 rawEdit[iniName] = val
         if rawEdit:
-            self._editConfig(**rawEdit)
+            return self.setConfig(**rawEdit)
 
+    def __edit_other(self, kw):
+        """Note: mutates kw, it's not a **kwargs."""
         args = []
         for var in ['subscription', 'posting']:
             val = kw.pop(var, None)
             if val is not None:
                 args.extend(['--%s' % var, val])
-        if kw:
-            raise RuntimeError, 'Unhandled eoc configuration items: %r' % kw
 
         if args:
             args.insert(0, '--edit')
             return self.runEoc(*args)
 
     def edit(self, **kw):
-        return defer.maybeDeferred(self._edit, **kw)
+        d = defer.maybeDeferred(self.__edit_ini, kw)
+        def _cb1(dummy, kw):
+            return defer.maybeDeferred(self.__edit_other, kw)
+        d.addCallback(_cb1, kw)
+        def _cbFinal(dummy, kw):
+            if kw:
+                raise RuntimeError, 'Unhandled eoc configuration items: %r' % kw
+        d.addCallback(_cbFinal, kw)
+        return d
 
     def destroy(self):
         return self.runEoc('--destroy')
 
     def getOwners(self):
-        cp = self._getConfig()
-	return cp.get("list", "owners").split()
+        d = self.getConfig('owners')
+        def _cb(owners):
+            return owners.split()
+        d.addCallback(_cb)
+        return d

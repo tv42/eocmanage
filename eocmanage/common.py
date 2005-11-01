@@ -1,5 +1,6 @@
 from zope.interface import Interface
 import string, email.Utils, time
+from twisted.internet import defer
 from twisted.web import http
 from nevow import context, compy, inevow, tags
 from formless import annotate
@@ -115,11 +116,25 @@ def isOwner(ctx):
     if not listname:
         return False
     thelist = eocinterface.MailingList(listname)
-    owners = thelist.getOwners()
-    return address in owners
+    d = thelist.getOwners()
+    def _cb(owners, address):
+        return address in owners
+    d.addCallback(_cb, address)
+    return d
 
 def render_ifOwner(self, ctx, data):
-    return render_if(ctx, isAdmin(ctx) or isOwner(ctx))
+    d = defer.maybeDeferred(isAdmin, ctx)
+    def _gotAdmin(isAdm, ctx):
+        if isAdm:
+            return True
+        else:
+            return isOwner(ctx)
+    d.addCallback(_gotAdmin, ctx)
+
+    def _gotResult(r, ctx):
+        return render_if(ctx, r)
+    d.addCallback(_gotResult, ctx)
+    return d
 
 def render_statusmessage(self, ctx, data):
     try:

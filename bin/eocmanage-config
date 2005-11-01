@@ -1,0 +1,98 @@
+#!/usr/bin/python
+import os, sys, ConfigParser
+from twisted.python import usage
+
+# TODO replace whole thing with enemies-of-carlotta --get and --set,
+# when available for production use
+
+class Options(usage.Options):
+    synopsis = """\
+Usage: eocmanage-config [OPTS..] [--] LIST OPERATION ARGS..
+
+Operations:
+	get ITEM [ITEM..]
+        set ITEM=VALUE [ITEM=VALUE..]
+"""
+
+    ITEMS = [
+        'subscription',
+        'posting',
+        'mail-on-subscription-changes',
+        'mail-on-forced-unsubscribe',
+        'owners',
+        ]
+
+    def parseArgs(self, listname, operation, item1, *items):
+        fn = getattr(self, 'do_%s' % operation, None)
+        if fn is None:
+            raise usage.UsageError('Unknown operation: %r' % operation)
+
+        l = []
+        l.append(item1)
+        l.extend(items)
+
+        fn(listname, l)
+
+    def _configFileName(self, listname):
+        EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
+        if EOC_DOTDIR is None:
+            EOC_DOTDIR = os.path.expanduser('~/.enemies-of-carlotta')
+        filename = os.path.join(EOC_DOTDIR,
+                                listname,
+                                'config')
+        return filename
+
+    def _openConfig(self, listname):
+        # going way too much under the hood
+	cp = ConfigParser.ConfigParser()
+	cp.add_section("list")
+	cp.set("list", "subscription", "free")
+	cp.set("list", "posting", "free")
+        filename = self._configFileName(listname)
+        cp.read(filename)
+        return cp
+
+    def do_get(self, listname, items):
+        cp = self._openConfig(listname)
+
+        for item in items:
+            if item not in self.ITEMS:
+                raise usage.UsageError('Invalid item: %r' % item)
+
+            val = cp.get("list", item)
+            print val
+
+    def do_set(self, listname, items):
+        cp = self._openConfig(listname)
+
+        for item in items:
+            if '=' not in item:
+                raise usage.UsageError('set argument not in form ITEM=VALUE: %r' % item)
+            k,v = item.split('=', 1)
+
+            if k not in self.ITEMS:
+                raise usage.UsageError('Invalid item: %r' % k)
+            cp.set("list", k, v)
+
+        filename = self._configFileName(listname)
+        f = file('%s.tmp' % filename, 'w')
+        cp.write(f)
+        f.close()
+        os.rename('%s.tmp' % filename, filename)
+
+def main():
+    try:
+        opts = Options()
+        try:
+            opts.parseOptions()
+        except usage.UsageError, errortext:
+            n = sys.argv[0]
+            print >>sys.stderr, '%s: %s' % (n, errortext)
+            print >>sys.stderr, '%s: Try --help for usage details.' % n
+            sys.exit(1)
+    except KeyboardInterrupt:
+        print >>sys.stderr, '%s: interrupted.' % sys.argv[0]
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()
