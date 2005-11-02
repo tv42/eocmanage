@@ -101,6 +101,11 @@ class EocSite(object):
         ml = MailingList(self, listname)
         return ml
 
+    def getCommandAddress(self, listname, command):
+        local, domain = listname.split('@', 1)
+        name = '%s-%s@%s' % (local, command, domain)
+        return name
+
 class MailingList(object):
     """Please do not instantiate directly, use anEocSite.getList(listname)."""
     def __init__(self, site, listname):
@@ -116,8 +121,7 @@ class MailingList(object):
         name = self.listname
         command = kwargs.pop('command', None)
         if command is not None:
-            local, domain = name.split('@', 1)
-            name = '%s-%s@%s' % (local, command, domain)
+            name = self.site.getCommandAddress(self.listname, command)
 
         kwargs.get('env', {}).setdefault('RECIPIENT', name)
         return self.runEoc('--incoming', stdin=message, *args, **kwargs)
@@ -270,8 +274,15 @@ class MailingList(object):
         return self.runEoc('--destroy')
 
     def getOwners(self):
+        defaultOwner = self.site.getCommandAddress(self.listname, 'ignore')
+
         d = self.getConfig('owners')
-        def _cb(owners):
-            return owners.split()
-        d.addCallback(_cb)
+        def _cb(owners, defaultOwner):
+            l = owners.split()
+            try:
+                l.remove(defaultOwner)
+            except ValueError:
+                pass
+            return l
+        d.addCallback(_cb, defaultOwner)
         return d

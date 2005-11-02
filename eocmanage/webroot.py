@@ -54,7 +54,7 @@ class EocManage(rend.Page):
             action='Create')
 
     def create(self, name):
-        d = self.original.create(name, ['TODO'])
+        d = self.original.create(name, [self.original.getCommandAddress(name, 'ignore')])
         d.addCallback(common.statusPrefix, 'Created list %s' % name)
         d.addErrback(self._createFailed, name)
         return d
