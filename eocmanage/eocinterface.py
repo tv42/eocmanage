@@ -45,11 +45,15 @@ class _GetEocResult(protocol.ProcessProtocol):
 
 class EocSite(object):
     asUser = None
+    adminPublicAddress = None
 
     def __init__(self, **kw):
-        asUser = kw.pop('asUser', None)
-        if asUser is not None:
-            self.asUser = asUser
+        for attr in ['asUser',
+                     'adminPublicAddress',
+                     ]:
+            val = kw.pop(attr, None)
+            if val is not None:
+                setattr(self, attr, val)
 
         super(EocSite, self).__init__(**kw)
 

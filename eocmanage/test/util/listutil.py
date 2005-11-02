@@ -7,9 +7,10 @@ from eocmanage import eocinterface
 # things are _only_ used for testing. Never use any of
 # this code outside test environments.
 
-def getSite():
+def getSite(**kw):
     asUser = os.environ.get('MOCKSUDO_WANT_TO_USER', None)
-    site = eocinterface.EocSite(asUser=asUser)
+    kw.setdefault('asUser', asUser)
+    site = eocinterface.EocSite(**kw)
     return site
 
 def eoc_destroy(name):

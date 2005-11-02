@@ -59,7 +59,11 @@ class EocManage(rend.Page):
         d.addErrback(self._createFailed, name)
         return d
 
+    render_if = lambda self,ctx,data: common.render_if(ctx,data)
     render_ifAdmin = common.render_ifAdmin
 
     render_zebra = zebra.zebra()
     render_statusmessage = common.render_statusmessage
+
+    def data_adminPublicAddress(self, ctx, data):
+        return self.original.adminPublicAddress

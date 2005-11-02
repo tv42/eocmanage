@@ -19,10 +19,14 @@
       information about it.
     </p>
 
-    <p>
-      You can ask for help by emailing
-      <a href="mailto:TODO@TODO">TODO@TODO</a>.
-    </p>
+    <nevow:invisible nevow:render="if" nevow:data="adminPublicAddress">
+      <p nevow:pattern="True">
+	You can ask for help by emailing
+	<a>
+	  <nevow:attr name="href">mailto:<nevow:invisible nevow:render="string"/></nevow:attr>
+	  <nevow:invisible nevow:render="string"/></a>.
+      </p>
+    </nevow:invisible>
 
     <nevow:invisible nevow:render="ifAdmin">
       <nevow:invisible nevow:pattern="True">

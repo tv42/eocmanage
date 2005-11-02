@@ -4,7 +4,7 @@ from nevow import appserver
 from eocmanage import webroot, eocinterface
 from eocmanage.test.util import webutil, listutil
 
-eocSite = listutil.getSite()
+eocSite = listutil.getSite(adminPublicAddress='listmaster@example.com')
 root = webroot.EocManage(eocSite)
 root.child_mockauth = webutil.MockAuth()
 
