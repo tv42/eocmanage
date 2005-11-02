@@ -76,6 +76,29 @@ def _eoc_confirm_subunsub_accept(subunsub, name, address):
         what = 'UNsubscription'
     _line(f, "Subject: Please confirm %s to %s" % (what, name))
 
+    while True:
+        line = f.readline()
+        if line.startswith(' - - - - - - - -'):
+            break
+
+    _line(f, '')
+    _line(f, '')
+    _line(f, '')
+
+    _line(f, 'A request to %s the address %s' % (subunsub, address))
+    if subunsub == 'subscribe':
+        direction = 'to'
+    else:
+        direction = 'from'
+    _line(f, '%s the mailing list %s' % (direction, name))
+    line = f.readline()
+    assert line.startswith('was received on ')
+    line = f.readline()
+    assert line.startswith('by the web application at ')
+    line = f.readline()
+    assert line.startswith('from the web client ')
+    _line(f, '')
+
     f.close()
     os.unlink(filename)
 

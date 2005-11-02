@@ -199,22 +199,22 @@ class MailingList(object):
             '--',
             address)
 
-    def requestSubscribe(self, address):
+    def requestSubscribe(self, address, message):
         env = {}
         env.update(os.environ)
         env['SENDER'] = address
 
         return self.messageToEoc(command='subscribe',
-                                 message='TODO',
+                                 message=message,
                                  env=env)
 
-    def requestUnsubscribe(self, address):
+    def requestUnsubscribe(self, address, message):
         env = {}
         env.update(os.environ)
         env['SENDER'] = address
 
         return self.messageToEoc(command='unsubscribe',
-                                 message='TODO',
+                                 message=message,
                                  env=env)
 
     def list(self):

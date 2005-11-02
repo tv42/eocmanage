@@ -1,4 +1,4 @@
-import os
+import os, time
 from twisted.internet import defer
 from nevow import inevow, loaders, rend, url
 from formless import iformless, annotate, webform
@@ -15,9 +15,28 @@ class MailingListForUser(rend.Fragment):
                     ]),
             action='Subscribe')
 
+    def getRequestData(self, ctx):
+        request = inevow.IRequest(ctx)
+        return {
+            'listname': self.original.listname,
+            'date': time.strftime('%F %T %Z'),
+            'uri': request.URLPath(),
+            'clientIP': request.getClientIP(),
+            }
+
     def requestSubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        d = self.original.requestSubscribe(address)
+        data = self.getRequestData(ctx)
+        data['address'] = address
+        message = """
+
+A request to subscribe the address %(address)s
+to the mailing list %(listname)s
+was received on %(date)s
+by the web application at %(uri)s
+from the web client %(clientIP)s.
+""" % data
+        d = self.original.requestSubscribe(address, message)
         d.addCallback(common.statusPrefix,
                       'Subscription confirmation request sent to %s' % address)
         return d
@@ -33,7 +52,17 @@ class MailingListForUser(rend.Fragment):
 
     def requestUnsubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        d = self.original.requestUnsubscribe(address)
+        data = self.getRequestData(ctx)
+        data['address'] = address
+        message = """
+
+A request to unsubscribe the address %(address)s
+from the mailing list %(listname)s
+was received on %(date)s
+by the web application at %(uri)s
+from the web client %(clientIP)s.
+""" % data
+        d = self.original.requestUnsubscribe(address, message)
         d.addCallback(common.statusPrefix,
                       'Unsubscription confirmation request sent to %s' %
                       address)
