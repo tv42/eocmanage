@@ -20,6 +20,7 @@ Operations:
         'mail-on-subscription-changes',
         'mail-on-forced-unsubscribe',
         'owners',
+        'description',
         ]
 
     def parseArgs(self, listname, operation, item1, *items):
@@ -48,6 +49,7 @@ Operations:
 	cp.add_section("list")
 	cp.set("list", "subscription", "free")
 	cp.set("list", "posting", "free")
+	cp.set("list", "description", "")
         filename = self._configFileName(listname)
         cp.read(filename)
         return cp

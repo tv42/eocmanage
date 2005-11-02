@@ -13,6 +13,10 @@
 
     <nevow:invisible nevow:render="statusmessage"/>
 
+    <nevow:invisible nevow:render="if" nevow:data="description">
+      <p class="eocmanage-list-description" nevow:pattern="True" nevow:render="string"/>
+    </nevow:invisible>
+
     <h2>Using the List</h2>
     <p>
       To post a message to the list, send email to

@@ -114,13 +114,16 @@ class MailingListForOwner(rend.Fragment):
                               annotate.Boolean()),
             annotate.Argument('mail-on-forced-unsubscribe',
                               annotate.Boolean()),
+            annotate.Argument('description',
+                              annotate.String(null='')),
             ]),
             action='Edit')
 
     def edit(self, **kw):
         d = self.original.getConfig('subscription', 'posting',
                                     'mail-on-subscription-changes',
-                                    'mail-on-forced-unsubscribe')
+                                    'mail-on-forced-unsubscribe',
+                                    'description')
         d.addCallback(self.__edit, **kw)
         return d
 
@@ -129,7 +132,8 @@ class MailingListForOwner(rend.Fragment):
         (old['subscription'],
          old['posting'],
          old['mail-on-subscription-changes'],
-         old['mail-on-forced-unsubscribe']) = cfg
+         old['mail-on-forced-unsubscribe'],
+         old['description']) = cfg
 
         for k,v in kw.items():
             oldVal = old.get(k, None)
@@ -222,7 +226,8 @@ class WebMailingList(rend.Page):
         d = self.original.getConfig('subscription',
                                     'posting',
                                     'mail-on-subscription-changes',
-                                    'mail-on-forced-unsubscribe')
+                                    'mail-on-forced-unsubscribe',
+                                    'description')
 
         def _cb(cfg, ctx):
             bindingDefaults = {}
@@ -233,6 +238,7 @@ class WebMailingList(rend.Page):
              bindingDefaults['edit']['posting'],
              bindingDefaults['edit']['mail-on-subscription-changes'],
              bindingDefaults['edit']['mail-on-forced-unsubscribe'],
+             bindingDefaults['edit']['description'],
              ) = cfg
 
             return ctx.tag[
@@ -254,9 +260,12 @@ class WebMailingList(rend.Page):
     def data_list(self, ctx, data):
         return self.original.list()
 
+    render_if = lambda self,ctx,data: common.render_if(ctx,data)
     render_ifOwner = common.render_ifOwner
     render_ifAdmin = common.render_ifAdmin
 
     render_zebra = zebra.zebra()
     render_statusmessage = common.render_statusmessage
 
+    def data_description(self, ctx, data):
+        return self.original.getConfig('description')

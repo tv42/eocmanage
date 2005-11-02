@@ -34,7 +34,16 @@ class EocManage(rend.Page):
             return d
 
     def data_list(self, ctx, data):
-        return self.original.listLists()
+        d = self.original.listLists()
+        def _cb(addresses):
+            for address in addresses:
+                ml = self.original.getList(address)
+                d = ml.getConfig('description')
+                yield {'address': address,
+                       'description': d,
+                       }
+        d.addCallback(_cb)
+        return d
 
     def render_form(self, ctx, data):
         return ctx.tag[webform.renderForms()]

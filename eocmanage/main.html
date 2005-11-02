@@ -42,14 +42,20 @@
 	<th>Description</th>
       </tr>
       <tr nevow:pattern="item" nevow:render="zebra">
-	<td>
+	<td nevow:data="address">
 	  <a>
 	    <nevow:attr name="href"><nevow:invisible nevow:render="string" /></nevow:attr>
 	    <nevow:invisible nevow:render="string" />
 	  </a>
 	</td>
 	<td>
-	  TODO description here
+	  <nevow:invisible nevow:render="if" nevow:data="description">
+	    <span nevow:pattern="True"
+		  class="eocmanage-list-description"
+		  nevow:render="string">
+	      List description goes here
+	    </span>
+	  </nevow:invisible>
 	</td>
       </tr>
       <tr nevow:pattern="empty" nevow:render="zebra"><td colspan="2">No lists.</td></tr>

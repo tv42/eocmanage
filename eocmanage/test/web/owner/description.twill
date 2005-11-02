@@ -1,0 +1,66 @@
+go mockauth/login/pwner@example.com
+code 200
+back
+
+extend_with eocmanage.test.util.listutil
+eoc_destroy foo@bar.example.com
+reload
+notfind "foo@bar\.example\.com"
+
+eoc_create foo@bar.example.com pwner@example.com pwnstoo@example.com
+reload
+find "foo@bar\.example\.com"
+
+notfind eocmanage-list-description
+
+follow "foo@bar\.example\.com"
+title "Mailing List foo@bar.example.com"
+code 200
+find "Edit"
+find "Subscription"
+
+notfind eocmanage-list-description
+
+find '<input id="edit-description" type="text" class="freeform-input-text" value="" name="description" />'
+formvalue edit description "A new description edited from the web"
+submit
+code 200
+# TODO quote the following
+find "Edited settings: changed description from  to A new description edited from the web[.]"
+
+# changes actually happened
+find '<p class="eocmanage-list-description">A new description edited from the web</p>'
+find '<input id="edit-description" type="text" class="freeform-input-text" value="A new description edited from the web" name="description" />'
+
+# and are persistent, too
+reload
+code 200
+find '<p class="eocmanage-list-description">A new description edited from the web</p>'
+find '<input id="edit-description" type="text" class="freeform-input-text" value="A new description edited from the web" name="description" />'
+
+# and show up on the main screen, too
+#TODO why doesn't back work here? probably because previous request was POST, which redirected..
+go /
+reload
+code 200
+find '<span class="eocmanage-list-description">A new description edited from the web</span>'
+
+
+
+# now let's go and remove the description, and make sure it's gone
+follow "foo@bar\.example\.com"
+title "Mailing List foo@bar.example.com"
+code 200
+formvalue edit description ""
+submit
+code 200
+# TODO quote the following
+find "Edited settings: changed description from A new description edited from the web to [.]"
+notfind eocmanage-list-description
+find '<input id="edit-description" type="text" class="freeform-input-text" value="" name="description" />'
+
+#TODO why doesn't back work here? probably because previous request was POST, which redirected..
+go /
+reload
+code 200
+notfind eocmanage-list-description
