@@ -94,12 +94,12 @@ compy.registerAdapter(_authenticated,
 
 ADMINS = ['4dmin@example.com', 'oldbeard@example.net'] #TODO unhardcode
 
-class ICurrentListName(Interface):
+class ICurrentList(Interface):
     pass
 # None is special, need to return something else for "not known".
 compy.registerAdapter(lambda _: '',
                       context.WebContext,
-                      ICurrentListName)
+                      ICurrentList)
 
 def isAdmin(ctx):
     address = IAuthenticatedEmailAddress(ctx)
@@ -112,11 +112,10 @@ def isOwner(ctx):
     address = IAuthenticatedEmailAddress(ctx)
     if not address:
         return False
-    listname = ICurrentListName(ctx)
-    if not listname:
+    ml = ICurrentList(ctx)
+    if ml == '':
         return False
-    thelist = eocinterface.MailingList(listname)
-    d = thelist.getOwners()
+    d = ml.getOwners()
     def _cb(owners, address):
         return address in owners
     d.addCallback(_cb, address)

@@ -62,24 +62,47 @@ def _runEoc(*args, **kwargs):
     d.addCallback(_cb)
     return d
 
-def create(name, owners):
-    def listem():
-        for o in owners:
-            yield '--owner'
-            yield o
-    return _runEoc('--create',
-                   '--name', name,
-                   *list(listem()))
+class EocSite(object):
+    #TODO move runEoc, dotdir, asUser etc under this
 
-def listLists():
-    d = _runEoc('--show-lists')
-    def _cb(s):
-        return s.splitlines()
-    d.addCallback(_cb)
-    return d
+    eocDotDir = None
+    asUser = None
+
+    def __init__(self, **kw):
+        asUser = kw.pop('asUser', None)
+        if asUser is not None:
+            self.asUser = asUser
+
+        eocDotDir = kw.pop('eocDotDir', None)
+        if eocDotDir is not None:
+            self.eocDotDir = eocDotDir
+
+        super(EocSite, self).__init__(**kw)
+
+    def create(self, name, owners):
+        def listem():
+            for o in owners:
+                yield '--owner'
+                yield o
+        return _runEoc('--create',
+                       '--name', name,
+                       *list(listem()))
+
+    def listLists(self):
+        d = _runEoc('--show-lists')
+        def _cb(s):
+            return s.splitlines()
+        d.addCallback(_cb)
+        return d
+
+    def getList(self, listname):
+        ml = MailingList(self, listname)
+        return ml
 
 class MailingList(object):
-    def __init__(self, listname):
+    """Please do not instantiate directly, use anEocSite.getList(listname)."""
+    def __init__(self, site, listname):
+        self.site = site
         self.listname = listname
 
     def runEoc(self, *args, **kwargs):

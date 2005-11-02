@@ -19,7 +19,8 @@ def eoc_create(name, *owners):
     """Create list with given name"""
     assert '@' in name
     assert not name.startswith('.')
-    d = eocinterface.create(name, owners)
+    site = eocinterface.EocSite()
+    d = site.create(name, owners)
     wait(d)
 
 def _line(f, line, msg=None):
@@ -69,7 +70,8 @@ def _eoc_confirm_subunsub_accept(subunsub, name, address):
     os.unlink(filename)
 
     # now reply to the confirmation request
-    l = eocinterface.MailingList(name)
+    site = eocinterface.EocSite()
+    l = site.getList(name)
     env = {}
     env.update(os.environ)
     env['SENDER'] = 'not-same-as-before@example.com'
@@ -111,7 +113,8 @@ def eoc_confirm_sub_accept(name, address):
 def eoc_is_subscriber(name, address, want):
     assert '@' in name
     assert not name.startswith('.')
-    l = eocinterface.MailingList(name)
+    site = eocinterface.EocSite()
+    l = site.getList(name)
     d = l.list()
     subscribers = wait(d)
     got = address in subscribers

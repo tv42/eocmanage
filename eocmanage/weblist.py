@@ -3,10 +3,10 @@ from zope.interface import implements
 from twisted.internet import defer
 from nevow import inevow, loaders, rend, tags, url
 from formless import iformless, annotate, webform
-from eocmanage import eocinterface, zebra, common
+from eocmanage import zebra, common
 from eocmanage.common import EmailAddress
 
-class MailingListForUser(eocinterface.MailingList, rend.Fragment):
+class MailingListForUser(rend.Fragment):
     def bind_subscribe(self, ctx):
         return annotate.MethodBinding(
             name='requestSubscribe',
@@ -18,7 +18,7 @@ class MailingListForUser(eocinterface.MailingList, rend.Fragment):
 
     def requestSubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        d = super(MailingListForUser, self).requestSubscribe(address)
+        d = self.original.requestSubscribe(address)
         d.addCallback(common.statusPrefix,
                       'Subscription confirmation request sent to %s' % address)
         return d
@@ -34,13 +34,13 @@ class MailingListForUser(eocinterface.MailingList, rend.Fragment):
 
     def requestUnsubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        d = super(MailingListForUser, self).requestUnsubscribe(address)
+        d = self.original.requestUnsubscribe(address)
         d.addCallback(common.statusPrefix,
                       'Unsubscription confirmation request sent to %s' %
                       address)
         return d
 
-class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
+class MailingListForOwner(rend.Fragment):
     def bind_subscribe(self, ctx):
         return annotate.MethodBinding(
             name='subscribe',
@@ -52,7 +52,7 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
 
     def subscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        d = super(MailingListForOwner, self).subscribe(address)
+        d = self.original.subscribe(address)
         d.addCallback(common.statusPrefix, 'Subscribed %s' % address)
         return d
 
@@ -67,7 +67,7 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
 
     def unsubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
-        d = super(MailingListForOwner, self).unsubscribe(address)
+        d = self.original.unsubscribe(address)
         d.addCallback(common.statusPrefix, 'Unsubscribed %s' % address)
         return d
 
@@ -90,9 +90,9 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
             action='Edit')
 
     def edit(self, **kw):
-        d = self.getConfig('subscription', 'posting',
-                           'mail-on-subscription-changes',
-                           'mail-on-forced-unsubscribe')
+        d = self.original.getConfig('subscription', 'posting',
+                                    'mail-on-subscription-changes',
+                                    'mail-on-forced-unsubscribe')
         d.addCallback(self.__edit, **kw)
         return d
 
@@ -122,13 +122,13 @@ class MailingListForOwner(eocinterface.MailingList, rend.Fragment):
                     'old': old.get(k, None),
                     'new': kw.get(k, None),
                     }
-        d = super(MailingListForOwner, self).edit(**kw)
+        d = self.original.edit(**kw)
         d.addCallback(common.statusPrefix, 'Edited settings: %(edits)s' % {
             'edits': ', '.join(status(kw, old)),
             })
         return d
 
-class MailingListForAdmin(eocinterface.MailingList, rend.Fragment):
+class MailingListForAdmin(rend.Fragment):
     def bind_destroy(self, ctx):
         return annotate.MethodBinding(
             name='destroy',
@@ -141,8 +141,8 @@ class MailingListForAdmin(eocinterface.MailingList, rend.Fragment):
         u = url.URL.fromContext(ctx)
         request = inevow.IRequest(ctx)
         request.setComponent(iformless.IRedirectAfterPost, u.curdir())
-        d = eocinterface.MailingList.destroy(self)
-        d.addCallback(common.statusPrefix, 'Destroyed list %s' % self.listname)
+        d = self.original.destroy()
+        d.addCallback(common.statusPrefix, 'Destroyed list %s' % self.original.listname)
         return d
 
 class WebMailingList(rend.Page):
@@ -150,38 +150,33 @@ class WebMailingList(rend.Page):
                                  templateDir=os.path.split(os.path.abspath(__file__))[0])
 
 
-    def __init__(self, listname, *a, **kw):
-        self.listname = listname
+    def __init__(self, *a, **kw):
         rend.Page.__init__(self, *a, **kw)
-        self.remember(listname, common.ICurrentListName)
+        self.remember(self.original, common.ICurrentList)
 
     def data_name(self, ctx, data):
-        return self.listname
+        return self.original.listname
 
     def configurable_user(self, ctx):
-        return MailingListForUser(self.listname)
+        return MailingListForUser(self.original)
 
     def render_form_user(self, ctx, data):
-        d = self.locateConfigurable(ctx, 'user')
-        def _gotConfigurable(cf, ctx):
-            address = common.IEmailAddress(ctx)
-            bindingDefaults = {}
-            bindingDefaults.setdefault('subscribe', {})
-            bindingDefaults.setdefault('unsubscribe', {})
-            if not address:
-                d = defer.succeed(bindingDefaults)
-            else:
-                # TODO want __contains__, not iteration of everything
-                d=cf.list()
-                def _gotMembers(subs, bindingDefaults):
-                    if address not in subs:
-                        bindingDefaults['subscribe']['address'] = address
-                    else:
-                        bindingDefaults['unsubscribe']['address'] = address
-                    return bindingDefaults
-                d.addCallback(_gotMembers, bindingDefaults)
-            return d
-        d.addCallback(_gotConfigurable, ctx)
+        address = common.IEmailAddress(ctx)
+        bindingDefaults = {}
+        bindingDefaults.setdefault('subscribe', {})
+        bindingDefaults.setdefault('unsubscribe', {})
+        if not address:
+            d = defer.succeed(bindingDefaults)
+        else:
+            # TODO want __contains__, not iteration of everything
+            d=self.original.list()
+            def _gotMembers(subs, bindingDefaults):
+                if address not in subs:
+                    bindingDefaults['subscribe']['address'] = address
+                else:
+                    bindingDefaults['unsubscribe']['address'] = address
+                return bindingDefaults
+            d.addCallback(_gotMembers, bindingDefaults)
 
         def _gotDefaults(bindingDefaults, ctx):
             return ctx.tag[
@@ -193,17 +188,13 @@ class WebMailingList(rend.Page):
         return d
 
     def configurable_owner(self, ctx):
-        return MailingListForOwner(self.listname)
+        return MailingListForOwner(self.original)
 
     def render_form_owner(self, ctx, data):
-        d = self.locateConfigurable(ctx, 'owner')
-        def _gotConfigurable(cf):
-            d = cf.getConfig('subscription',
-                             'posting',
-                             'mail-on-subscription-changes',
-                             'mail-on-forced-unsubscribe')
-            return d
-        d.addCallback(_gotConfigurable)
+        d = self.original.getConfig('subscription',
+                                    'posting',
+                                    'mail-on-subscription-changes',
+                                    'mail-on-forced-unsubscribe')
 
         def _cb(cfg, ctx):
             bindingDefaults = {}
@@ -225,7 +216,7 @@ class WebMailingList(rend.Page):
         return d
 
     def configurable_admin(self, ctx):
-        return MailingListForAdmin(self.listname)
+        return MailingListForAdmin(self.original)
 
     def render_form_admin(self, ctx, data):
         return ctx.tag[
@@ -233,7 +224,7 @@ class WebMailingList(rend.Page):
             ]
 
     def data_list(self, ctx, data):
-        return eocinterface.MailingList(self.listname).list()
+        return self.original.list()
 
     render_ifOwner = common.render_ifOwner
     render_ifAdmin = common.render_ifAdmin

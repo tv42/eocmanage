@@ -24,18 +24,18 @@ class EocManage(rend.Page):
         elif '@' not in name:
             return None
         else:
-            ml = eocinterface.MailingList(name)
+            ml = self.original.getList(name)
             d = ml.exists()
-            def cb(exists, name):
+            def cb(exists, ml):
                 if exists:
-                    return weblist.WebMailingList(name)
+                    return weblist.WebMailingList(ml)
                 else:
                     return None
-            d.addCallback(cb, name)
+            d.addCallback(cb, ml)
             return d
 
     def data_list(self, ctx, data):
-        return eocinterface.listLists()
+        return self.original.listLists()
 
     def render_form(self, ctx, data):
         return ctx.tag[webform.renderForms()]
@@ -55,7 +55,7 @@ class EocManage(rend.Page):
             action='Create')
 
     def create(self, name):
-        d = eocinterface.create(name, ['TODO'])
+        d = self.original.create(name, ['TODO'])
         d.addCallback(common.statusPrefix, 'Created list %s' % name)
         d.addErrback(self._createFailed, name)
         return d
