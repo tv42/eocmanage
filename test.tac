@@ -2,9 +2,9 @@ from twisted.application import service, strports
 from nevow import appserver
 
 from eocmanage import webroot, eocinterface
-from eocmanage.test.util import webutil
+from eocmanage.test.util import webutil, listutil
 
-eocSite = eocinterface.EocSite()
+eocSite = listutil.getSite()
 root = webroot.EocManage(eocSite)
 root.child_mockauth = webutil.MockAuth()
 

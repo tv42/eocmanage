@@ -1,10 +1,17 @@
 #!/usr/bin/python
-SHAREDIR="/usr/share/enemies-of-carlotta"
+import os, sys
 
-import sys
+wanted_mocksudo_to_user = os.environ.get('MOCKSUDO_WANT_TO_USER', None)
+got_mocksudo_to_user = os.environ.get('MOCKSUDO_TO_USER', None)
+if wanted_mocksudo_to_user != got_mocksudo_to_user:
+    raise RuntimeError('Wanted mock sudo to user %r, got %r' % (
+        wanted_mocksudo_to_user,
+        got_mocksudo_to_user))
+
+SHAREDIR="/usr/share/enemies-of-carlotta"
 sys.path.insert(0, SHAREDIR)
 
-import eoc, os
+import eoc
 
 EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
 if EOC_DOTDIR is not None:

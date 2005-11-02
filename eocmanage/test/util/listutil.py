@@ -2,6 +2,16 @@ from twisted.trial.util import wait
 import os, shutil, errno
 from eocmanage import eocinterface
 
+# Everything in this file would need to go through sudo,
+# except we never use real sudo for testing, and these
+# things are _only_ used for testing. Never use any of
+# this code outside test environments.
+
+def getSite():
+    asUser = os.environ.get('MOCKSUDO_WANT_TO_USER', None)
+    site = eocinterface.EocSite(asUser=asUser)
+    return site
+
 def eoc_destroy(name):
     """Destroy list with given name"""
     assert '@' in name
@@ -19,7 +29,7 @@ def eoc_create(name, *owners):
     """Create list with given name"""
     assert '@' in name
     assert not name.startswith('.')
-    site = eocinterface.EocSite()
+    site = getSite()
     d = site.create(name, owners)
     wait(d)
 
@@ -70,7 +80,7 @@ def _eoc_confirm_subunsub_accept(subunsub, name, address):
     os.unlink(filename)
 
     # now reply to the confirmation request
-    site = eocinterface.EocSite()
+    site = getSite()
     l = site.getList(name)
     env = {}
     env.update(os.environ)
@@ -113,7 +123,7 @@ def eoc_confirm_sub_accept(name, address):
 def eoc_is_subscriber(name, address, want):
     assert '@' in name
     assert not name.startswith('.')
-    site = eocinterface.EocSite()
+    site = getSite()
     l = site.getList(name)
     d = l.list()
     subscribers = wait(d)

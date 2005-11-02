@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+echo "mocksudo $@" 1>&2
+
+if [ -n "$MOCKSUDO_TO_USER" ]; then
+    echo "mocksudo: recursion detected, aborting." 1>&2
+    exit 1
+fi
+
+[ "$1" = "-H" ]
+shift
+
+[ "$1" = "-u" ]
+shift
+
+export MOCKSUDO_TO_USER="$1"
+shift
+
+[ "$1" = "--" ]
+shift
+
+exec -- "$@"

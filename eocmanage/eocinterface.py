@@ -43,29 +43,7 @@ class _GetEocResult(protocol.ProcessProtocol):
         else:
             self.deferred.callback((out, err, code))
 
-def _runEoc(*args, **kwargs):
-    kwargs.setdefault('env', os.environ)
-    stdin = kwargs.pop('stdin', None)
-    d = defer.Deferred()
-    p = _GetEocResult(d, stdin)
-    executable = kwargs.pop('executable', None)
-    if executable is None:
-        executable = 'enemies-of-carlotta'
-    reactor.spawnProcess(p,
-                         executable=executable,
-                         args=(executable,)+tuple(args),
-                         **kwargs)
-    def _cb((out, err, code)):
-        if code != 0:
-            raise EocFailed, (code, err)
-        return out
-    d.addCallback(_cb)
-    return d
-
 class EocSite(object):
-    #TODO move runEoc, dotdir, asUser etc under this
-
-    eocDotDir = None
     asUser = None
 
     def __init__(self, **kw):
@@ -73,23 +51,43 @@ class EocSite(object):
         if asUser is not None:
             self.asUser = asUser
 
-        eocDotDir = kw.pop('eocDotDir', None)
-        if eocDotDir is not None:
-            self.eocDotDir = eocDotDir
-
         super(EocSite, self).__init__(**kw)
+
+    def runEoc(self, *args, **kwargs):
+        kwargs.setdefault('env', os.environ)
+        stdin = kwargs.pop('stdin', None)
+        d = defer.Deferred()
+        p = _GetEocResult(d, stdin)
+        executable = kwargs.pop('executable', None)
+        if executable is None:
+            executable = 'enemies-of-carlotta'
+        args = list(args)
+        args.insert(0, executable)
+        asUser = kwargs.pop('asUser', self.asUser)
+        if asUser is not None:
+            args[:0] = ['sudo', '-H', '-u', asUser, '--']
+        reactor.spawnProcess(p,
+                             executable=args[0],
+                             args=args,
+                             **kwargs)
+        def _cb((out, err, code)):
+            if code != 0:
+                raise EocFailed, (code, err)
+            return out
+        d.addCallback(_cb)
+        return d
 
     def create(self, name, owners):
         def listem():
             for o in owners:
                 yield '--owner'
                 yield o
-        return _runEoc('--create',
-                       '--name', name,
-                       *list(listem()))
+        return self.runEoc('--create',
+                           '--name', name,
+                           *list(listem()))
 
     def listLists(self):
-        d = _runEoc('--show-lists')
+        d = self.runEoc('--show-lists')
         def _cb(s):
             return s.splitlines()
         d.addCallback(_cb)
@@ -106,7 +104,7 @@ class MailingList(object):
         self.listname = listname
 
     def runEoc(self, *args, **kwargs):
-        return _runEoc('--name', self.listname, *args, **kwargs)
+        return self.site.runEoc('--name', self.listname, *args, **kwargs)
 
     def messageToEoc(self, *args, **kwargs):
         message = kwargs.pop('message')
@@ -118,8 +116,7 @@ class MailingList(object):
             name = '%s-%s@%s' % (local, command, domain)
 
         kwargs.get('env', {}).setdefault('RECIPIENT', name)
-        return _runEoc('--name', self.listname, '--incoming',
-                       stdin=message, *args, **kwargs)
+        return self.runEoc('--incoming', stdin=message, *args, **kwargs)
 
     _CFG_BOOLEANS = sets.ImmutableSet(['mail-on-subscription-changes',
                                        'mail-on-forced-unsubscribe'])
@@ -143,11 +140,11 @@ class MailingList(object):
             return value
 
     def getConfig(self, *items):
-        d = _runEoc('--',
-                    self.listname,
-                    'get',
-                    executable='eocmanage-config',
-                    *items)
+        d = self.site.runEoc('--',
+                             self.listname,
+                             'get',
+                             executable='eocmanage-config',
+                             *items)
         def _cb(output, items):
             values = output.splitlines()
             if len(values) != len(items):
@@ -170,11 +167,11 @@ class MailingList(object):
                 raise RuntimeError('Invalid configuration item: %r' % k)
             v = self._cfgSerialize(k, v)
             args.append('%s=%s' % (k, v))
-        d = _runEoc('--',
-                    self.listname,
-                    'set',
-                    executable='eocmanage-config',
-                    *args)
+        d = self.site.runEoc('--',
+                             self.listname,
+                             'set',
+                             executable='eocmanage-config',
+                             *args)
         return d
 
     def exists(self):
