@@ -1,4 +1,4 @@
-from nevow import tags, compy, inevow
+from nevow import compy, inevow
 
 class IZebraStyle(compy.Interface):
     """Marker interface for zebra."""

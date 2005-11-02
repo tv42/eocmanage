@@ -4,7 +4,6 @@ from twisted.internet import defer
 from twisted.web import http
 from nevow import context, compy, inevow, tags
 from formless import annotate
-from eocmanage import eocinterface
 
 class EmailAddress(annotate.String):
     required = True

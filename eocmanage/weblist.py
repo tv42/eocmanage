@@ -1,7 +1,6 @@
 import os
-from zope.interface import implements
 from twisted.internet import defer
-from nevow import inevow, loaders, rend, tags, url
+from nevow import inevow, loaders, rend, url
 from formless import iformless, annotate, webform
 from eocmanage import zebra, common
 from eocmanage.common import EmailAddress

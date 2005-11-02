@@ -1,5 +1,4 @@
 import os
-from zope.interface import implements
 from nevow import rend, loaders, static
 from formless import annotate, webform
 from eocmanage import weblist, eocinterface, zebra, common

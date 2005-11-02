@@ -1,6 +1,6 @@
 import os, sets
 from cStringIO import StringIO
-from twisted.internet import utils, protocol, defer, reactor
+from twisted.internet import protocol, defer, reactor
 
 class EocFailed(Exception):
     """Calling eoc failed"""
