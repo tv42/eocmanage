@@ -17,21 +17,20 @@ code 200
 find "Edit"
 find "Subscription"
 
-find '<input id="edit-mailOnSubscriptionChanges" type="checkbox" class="freeform-input-checkbox" value="True" name="mailOnSubscriptionChanges" />'
-find '<input id="edit-mailOnForcedUnsubscribe" type="checkbox" class="freeform-input-checkbox" value="True" name="mailOnForcedUnsubscribe" />'
-formvalue edit mailOnSubscriptionChanges True
-formvalue edit mailOnForcedUnsubscribe True
+find '<input id="edit-mail-on-subscription-changes" type="checkbox" class="freeform-input-checkbox" value="True" name="mail-on-subscription-changes" />'
+find '<input id="edit-mail-on-forced-unsubscribe" type="checkbox" class="freeform-input-checkbox" value="True" name="mail-on-forced-unsubscribe" />'
+formvalue edit mail-on-subscription-changes True
+formvalue edit mail-on-forced-unsubscribe True
 submit
 code 200
-#TODO don't show raw variable names
-find "Edited settings: changed mailOnForcedUnsubscribe from False to True, changed mailOnSubscriptionChanges from False to True[.]"
+find "Edited settings: changed mail-on-forced-unsubscribe from False to True, changed mail-on-subscription-changes from False to True[.]"
 
 # changes actually happened
-find '<input checked="checked" name="mailOnSubscriptionChanges" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mailOnSubscriptionChanges" />'
-find '<input checked="checked" name="mailOnForcedUnsubscribe" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mailOnForcedUnsubscribe" />'
+find '<input checked="checked" name="mail-on-subscription-changes" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mail-on-subscription-changes" />'
+find '<input checked="checked" name="mail-on-forced-unsubscribe" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mail-on-forced-unsubscribe" />'
 
 # and are persistent, too
 reload
 code 200
-find '<input checked="checked" name="mailOnSubscriptionChanges" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mailOnSubscriptionChanges" />'
-find '<input checked="checked" name="mailOnForcedUnsubscribe" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mailOnForcedUnsubscribe" />'
+find '<input checked="checked" name="mail-on-subscription-changes" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mail-on-subscription-changes" />'
+find '<input checked="checked" name="mail-on-forced-unsubscribe" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mail-on-forced-unsubscribe" />'

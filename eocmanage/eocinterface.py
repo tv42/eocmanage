@@ -227,19 +227,15 @@ class MailingList(object):
     def __edit_ini(self, kw):
         """Note: mutates kw, it's not a **kwargs."""
         rawEdit = {}
-        for var, iniName in [
-            ('mailOnSubscriptionChanges',
-             'mail-on-subscription-changes'),
-            ('mailOnForcedUnsubscribe',
-             'mail-on-forced-unsubscribe'),
-            ]:
+        for var in ['mail-on-subscription-changes',
+                    'mail-on-forced-unsubscribe']:
             val = kw.pop(var, None)
             if val is not None:
                 if val:
                     val = 'yes'
                 else:
                     val = 'no'
-                rawEdit[iniName] = val
+                rawEdit[var] = val
         if rawEdit:
             return self.setConfig(**rawEdit)
 

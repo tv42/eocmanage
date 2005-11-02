@@ -81,9 +81,9 @@ class MailingListForOwner(rend.Fragment):
                               annotate.Radio(choices=['free',
                                                       'auto',
                                                       'moderated'])),
-            annotate.Argument('mailOnSubscriptionChanges',
+            annotate.Argument('mail-on-subscription-changes',
                               annotate.Boolean()),
-            annotate.Argument('mailOnForcedUnsubscribe',
+            annotate.Argument('mail-on-forced-unsubscribe',
                               annotate.Boolean()),
             ]),
             action='Edit')
@@ -99,8 +99,8 @@ class MailingListForOwner(rend.Fragment):
         old = {}
         (old['subscription'],
          old['posting'],
-         old['mailOnSubscriptionChanges'],
-         old['mailOnForcedUnsubscribe']) = cfg
+         old['mail-on-subscription-changes'],
+         old['mail-on-forced-unsubscribe']) = cfg
 
         for k,v in kw.items():
             oldVal = old.get(k, None)
@@ -202,8 +202,8 @@ class WebMailingList(rend.Page):
             bindingDefaults.setdefault('unsubscribe', {})
             (bindingDefaults['edit']['subscription'],
              bindingDefaults['edit']['posting'],
-             bindingDefaults['edit']['mailOnSubscriptionChanges'],
-             bindingDefaults['edit']['mailOnForcedUnsubscribe'],
+             bindingDefaults['edit']['mail-on-subscription-changes'],
+             bindingDefaults['edit']['mail-on-forced-unsubscribe'],
              ) = cfg
 
             return ctx.tag[
