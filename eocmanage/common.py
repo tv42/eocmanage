@@ -41,9 +41,6 @@ def render_if(ctx, data):
 class IEmailAddress(Interface):
     pass
 
-#TODO get from cookie or session
-# None is special, need to return something else for "not known".
-
 COOKIE_KEY = 'eocmanage_email'
 
 def rememberEmail(ctx, address):
@@ -57,6 +54,20 @@ def rememberEmail(ctx, address):
                           expires=expires)
 
 def _remembered(ctx):
+    """
+    Try to get a remembered email address from context.
+
+    - authenticated users are recognized
+    - addresses stored in a cookie are recognized,
+      but verified to be validly formatted
+
+    @return: email address as string, or empty string for
+    nothing remembered.
+
+    (Cannot use None as nothing remembered, as that has special
+    meaning to the adapter machinery.)
+    """
+
     authenticated = IAuthenticatedEmailAddress(ctx)
     if authenticated:
         return authenticated
