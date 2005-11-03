@@ -1,0 +1,220 @@
+#: eocmanage/weblist.py:16 eocmanage/weblist.py:53 eocmanage/weblist.py:83
+#: eocmanage/weblist.py:100 eocmanage/list.html:54
+msgid "Address"
+msgstr ""
+
+#: eocmanage/weblist.py:18
+msgid "Request Subscription"
+msgstr ""
+
+#: eocmanage/weblist.py:19
+msgid "Subscribe"
+msgstr ""
+
+#: eocmanage/weblist.py:44
+#, python-format
+msgid "Subscription confirmation request sent to %s"
+msgstr ""
+
+#: eocmanage/weblist.py:55
+msgid "Request Unsubscription"
+msgstr ""
+
+#: eocmanage/weblist.py:56
+msgid "Unsubscribe"
+msgstr ""
+
+#: eocmanage/weblist.py:72
+#, python-format
+msgid "Unsubscription confirmation request sent to %s"
+msgstr ""
+
+#: eocmanage/weblist.py:85
+msgid "Subscribe Without Confirmation"
+msgstr ""
+
+#: eocmanage/weblist.py:86
+msgid "Add subscriber to list"
+msgstr ""
+
+#: eocmanage/weblist.py:91
+#, python-format
+msgid "Subscribed %s"
+msgstr ""
+
+#: eocmanage/weblist.py:102
+msgid "Unsubscribe Without Confirmation"
+msgstr ""
+
+#: eocmanage/weblist.py:103
+msgid "Remove subscriber from list"
+msgstr ""
+
+#: eocmanage/weblist.py:108
+#, python-format
+msgid "Unsubscribed %s"
+msgstr ""
+
+#: eocmanage/weblist.py:112
+msgid "Free"
+msgstr ""
+
+#: eocmanage/weblist.py:113
+msgid "Moderated"
+msgstr ""
+
+#: eocmanage/weblist.py:114
+msgid "Automatic"
+msgstr ""
+
+#: eocmanage/weblist.py:128
+msgid "Subscription"
+msgstr ""
+
+#: eocmanage/weblist.py:134
+msgid "Posting"
+msgstr ""
+
+#: eocmanage/weblist.py:137
+msgid "Notify owners on subscription changes"
+msgstr ""
+
+#: eocmanage/weblist.py:140
+msgid "Notify owners on forced unsubscribe"
+msgstr ""
+
+#: eocmanage/weblist.py:143 eocmanage/main.html:41
+msgid "Description"
+msgstr ""
+
+#: eocmanage/weblist.py:145 eocmanage/weblist.py:146
+msgid "Edit"
+msgstr ""
+
+#: eocmanage/weblist.py:172
+msgid "Settings not changed."
+msgstr ""
+
+#: eocmanage/weblist.py:194
+#, python-format
+msgid "changed %(key)s from %(old)s to %(new)s"
+msgstr ""
+
+#: eocmanage/weblist.py:214
+msgid "Edited settings: "
+msgstr ""
+
+#: eocmanage/weblist.py:225 eocmanage/weblist.py:226
+msgid "Destroy"
+msgstr ""
+
+#: eocmanage/weblist.py:233
+#, python-format
+msgid "Destroyed list %s"
+msgstr ""
+
+#: eocmanage/webroot.py:55
+msgid "Eoc failed"
+msgstr ""
+
+#: eocmanage/webroot.py:62
+msgid "List address"
+msgstr ""
+
+#: eocmanage/webroot.py:64
+msgid "Create"
+msgstr ""
+
+#: eocmanage/webroot.py:65
+msgid "Create a New List"
+msgstr ""
+
+#: eocmanage/webroot.py:69
+#, python-format
+msgid "Created list %s"
+msgstr ""
+
+#: eocmanage/main.html:18
+msgid ""
+"Choose a list to subscribe, unsubscribe or to get more information about it."
+msgstr ""
+
+#: eocmanage/main.html:5 eocmanage/main.html:10
+msgid "Overview of Mailing Lists"
+msgstr ""
+
+#: eocmanage/list.html:75 eocmanage/main.html:68
+msgid "web interface is powered by"
+msgstr ""
+
+#: eocmanage/list.html:25
+msgid "Using the List"
+msgstr ""
+
+#: eocmanage/main.html:40
+msgid "List"
+msgstr ""
+
+#: eocmanage/list.html:35
+msgid ""
+"To subscribe or unsubscribe, type your address and press the corresponding "
+"button."
+msgstr ""
+
+#: eocmanage/list.html:53
+msgid "Name"
+msgstr ""
+
+#: eocmanage/list.html:67
+msgid "No subscribers."
+msgstr ""
+
+#: eocmanage/main.html:37
+msgid "All Lists"
+msgstr ""
+
+#: eocmanage/list.html:33
+msgid "Subscribing to the List"
+msgstr ""
+
+#: eocmanage/main.html:61
+msgid "No lists."
+msgstr ""
+
+#: eocmanage/list.html:37
+msgid ""
+"As extra protection, you will be sent an email, and the action will only be "
+"performed <em>after</em> you have confirmed it by replying to the message."
+msgstr ""
+
+#: eocmanage/list.html:17
+msgid "all lists"
+msgstr ""
+
+#: eocmanage/list.html:42 eocmanage/main.html:32
+msgid "List Administration"
+msgstr ""
+
+#: eocmanage/main.html:15
+msgid "Below is a listing of all the public mailing lists."
+msgstr ""
+
+#: eocmanage/list.html:6 eocmanage/list.html:13
+msgid "Mailing List"
+msgstr ""
+
+#: eocmanage/main.html:23
+msgid "You can ask for help by emailing"
+msgstr ""
+
+#: eocmanage/list.html:73 eocmanage/main.html:66
+msgid "These lists are managed by"
+msgstr ""
+
+#: eocmanage/list.html:27
+msgid "To post a message to the list, send email to"
+msgstr ""
+
+#: eocmanage/list.html:50
+msgid "Current Subscribers"
+msgstr ""

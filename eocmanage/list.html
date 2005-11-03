@@ -2,14 +2,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:nevow="http://nevow.com/ns/nevow/0.1">
   <head>
-    <title>Mailing List <nevow:invisible nevow:render="string" nevow:data="name"/></title>
+    <title>
+      <nevow:invisible nevow:render="i18n">Mailing List</nevow:invisible> <nevow:invisible nevow:render="string" nevow:data="name"/>
+    </title>
     <link rel="stylesheet" type="text/css" href="_freeform.css" />
     <link rel="stylesheet" type="text/css" href="_style/eocmanage.css" />
   </head>
   <body>
-    <h1>Mailing List <nevow:invisible nevow:render="string" nevow:data="name"/></h1>
+    <h1>
+      <nevow:invisible nevow:render="i18n">Mailing List</nevow:invisible>
+      <nevow:invisible nevow:render="string" nevow:data="name"/>
+    </h1>
 
-    <p><a href="../">all lists</a></p>
+    <p><a href="../" nevow:render="i18n">all lists</a></p>
 
     <nevow:invisible nevow:render="statusmessage"/>
 
@@ -17,27 +22,24 @@
       <p class="eocmanage-list-description" nevow:pattern="True" nevow:render="string"/>
     </nevow:invisible>
 
-    <h2>Using the List</h2>
+    <h2 nevow:render="i18n">Using the List</h2>
     <p>
-      To post a message to the list, send email to
+      <nevow:invisible nevow:render="i18n">To post a message to the list, send email to</nevow:invisible>
       <a><nevow:attr name="href">mailto:<nevow:invisible nevow:render="string" nevow:data="name"/></nevow:attr><nevow:invisible nevow:render="string" nevow:data="name"/></a>.
     </p>
 
     <nevow:invisible nevow:render="ifOwner">
       <nevow:invisible nevow:pattern="False">
-	<h2>Subscribing to the List</h2>
+	<h2 nevow:render="i18n">Subscribing to the List</h2>
 	<p>
-	  To subscribe or unsubscribe, type your address and press the
-	  corresponding button.
+	  <span nevow:render="i18n">To subscribe or unsubscribe, type your address and press the corresponding button.</span>
 
-	  As extra protection, you will be sent an email, and the action
-	  will only be performed <em>after</em> you have confirmed it by
-	  replying to the message.
+	  <span nevow:render="i18n">As extra protection, you will be sent an email, and the action will only be performed <em>after</em> you have confirmed it by replying to the message.</span>
 	</p>
 	<div class="eocmanage-user" nevow:render="form_user"/>
       </nevow:invisible>
       <nevow:invisible nevow:pattern="True">
-	<h2>List Administration</h2>
+	<h2 nevow:render="i18n">List Administration</h2>
 	<div class="eocmanage-owner" nevow:render="form_owner"/>
 	<nevow:invisible nevow:render="ifAdmin">
 	  <nevow:invisible nevow:pattern="True">
@@ -45,11 +47,11 @@
 	  </nevow:invisible>
 	</nevow:invisible>
 
-	<h2>Current Subscribers</h2>
+	<h2 nevow:render="i18n">Current Subscribers</h2>
 	<table class="eocmanage-owner" nevow:render="sequence" nevow:data="list">
 	  <tr nevow:pattern="header" nevow:render="zebra">
-	    <th>Name</th>
-	    <th>Address</th>
+	    <th nevow:render="i18n">Name</th>
+	    <th nevow:render="i18n">Address</th>
 	  </tr>
 	  <tr nevow:pattern="item" nevow:render="zebra">
 	    <td>
@@ -62,15 +64,15 @@
 	      </a>
 	    </td>
 	  </tr>
-	  <tr nevow:pattern="empty" nevow:render="zebra"><td colspan="2">No subscribers.</td></tr>
+	  <tr nevow:pattern="empty" nevow:render="zebra"><td colspan="2" nevow:render="i18n">No subscribers.</td></tr>
 	</table>
       </nevow:invisible>
     </nevow:invisible>
 
     <p class="eocmanage-footer">
-      This is list is managed by
+      <span nevow:render="i18n">These lists are managed by</span>
       <a href="http://liw.iki.fi/liw/eoc/">EoC</a>,
-      web interface is powered by
+      <span nevow:render="i18n">web interface is powered by</span>
       <a href="http://www.inoi.fi/open/trac/eocmanage">eocmanage</a>.
     </p>
   </body>

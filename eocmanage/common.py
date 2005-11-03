@@ -152,7 +152,10 @@ def render_statusmessage(self, ctx, data):
         return ctx.tag
     return ctx.tag.clear()[tags.div(class_='statusmessage')[status]]
 
-def statusPrefix(orig, msg):
+def statusPrefix(orig, *msg):
+    msg = list(msg)
     if orig:
-        msg = '%s: %s' % (msg, orig)
-    return '%s.' % msg
+        msg.append(': ')
+        msg.append(orig)
+    msg.append('.')
+    return msg

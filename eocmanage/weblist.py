@@ -1,8 +1,9 @@
 import os, time
 from twisted.internet import defer
-from nevow import inevow, loaders, rend, url
+from nevow import inevow, loaders, rend, url, flat
 from formless import iformless, annotate, webform
-from eocmanage import zebra, common
+from eocmanage import zebra, common, i18n
+from eocmanage.i18n import _
 from eocmanage.common import EmailAddress
 
 class MailingListForUser(rend.Fragment):
@@ -11,9 +12,11 @@ class MailingListForUser(rend.Fragment):
             name='requestSubscribe',
             typeValue=annotate.Method(arguments=[
                     annotate.Argument('ctx', annotate.Context()),
-                    annotate.Argument('address', EmailAddress()),
-                    ]),
-            action='Subscribe')
+                    annotate.Argument('address',
+                                      EmailAddress(label=_('Address'))),
+                    ],
+                                      label=_('Request Subscription')),
+            action=_('Subscribe'))
 
     def getRequestData(self, ctx):
         request = inevow.IRequest(ctx)
@@ -38,7 +41,7 @@ from the web client %(clientIP)s.
 """ % data
         d = self.original.requestSubscribe(address, message)
         d.addCallback(common.statusPrefix,
-                      'Subscription confirmation request sent to %s' % address)
+                      _('Subscription confirmation request sent to %s') % address)
         return d
 
     def bind_unsubscribe(self, ctx):
@@ -46,9 +49,11 @@ from the web client %(clientIP)s.
             name='requestUnsubscribe',
             typeValue=annotate.Method(arguments=[
                     annotate.Argument('ctx', annotate.Context()),
-                    annotate.Argument('address', EmailAddress()),
-                    ]),
-            action='Unsubscribe')
+                    annotate.Argument('address',
+                                      EmailAddress(label=_('Address'))),
+                    ],
+                                      label=_('Request Unsubscription')),
+            action=_('Unsubscribe'))
 
     def requestUnsubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
@@ -64,7 +69,7 @@ from the web client %(clientIP)s.
 """ % data
         d = self.original.requestUnsubscribe(address, message)
         d.addCallback(common.statusPrefix,
-                      'Unsubscription confirmation request sent to %s' %
+                      _('Unsubscription confirmation request sent to %s') %
                       address)
         return d
 
@@ -74,14 +79,16 @@ class MailingListForOwner(rend.Fragment):
             name='subscribe',
             typeValue=annotate.Method(arguments=[
                     annotate.Argument('ctx', annotate.Context()),
-                    annotate.Argument('address', EmailAddress()),
-                    ]),
-            action='Subscribe')
+                    annotate.Argument('address',
+                                      EmailAddress(label=_('Address'))),
+                    ],
+                                      label=_('Subscribe Without Confirmation')),
+            action=_('Add subscriber to list'))
 
     def subscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
         d = self.original.subscribe(address)
-        d.addCallback(common.statusPrefix, 'Subscribed %s' % address)
+        d.addCallback(common.statusPrefix, _('Subscribed %s') % address)
         return d
 
     def bind_unsubscribe(self, ctx):
@@ -89,45 +96,64 @@ class MailingListForOwner(rend.Fragment):
             name='unsubscribe',
             typeValue=annotate.Method(arguments=[
                     annotate.Argument('ctx', annotate.Context()),
-                    annotate.Argument('address', EmailAddress()),
-                    ]),
-            action='Unsubscribe')
+                    annotate.Argument('address',
+                                      EmailAddress(label=_('Address'))),
+                    ],
+                                      label=_('Unsubscribe Without Confirmation')),
+            action=_('Remove subscriber from list'))
 
     def unsubscribe(self, ctx, address):
         common.rememberEmail(ctx, address)
         d = self.original.unsubscribe(address)
-        d.addCallback(common.statusPrefix, 'Unsubscribed %s' % address)
+        d.addCallback(common.statusPrefix, _('Unsubscribed %s') % address)
         return d
+
+    EDIT_RADIO_LABELS = {
+        'free': _('Free'),
+        'moderated': _('Moderated'),
+        'auto': _('Automatic'),
+        }
+    def stringifyToLabel(self, val):
+        return self.EDIT_RADIO_LABELS.get(val, val)
 
     def bind_edit(self, ctx):
         return annotate.MethodBinding(
             name='edit',
             typeValue=annotate.Method(arguments=[
+            annotate.Argument('ctx', annotate.Context()),
             annotate.Argument('subscription',
                               annotate.Radio(choices=['free',
-                                                      'moderated'])),
+                                                      'moderated'],
+                                             stringify=self.stringifyToLabel,
+                                             label=_('Subscription'))),
             annotate.Argument('posting',
                               annotate.Radio(choices=['free',
                                                       'auto',
-                                                      'moderated'])),
+                                                      'moderated'],
+                                             stringify=self.stringifyToLabel,
+                                             label=_('Posting'))),
             annotate.Argument('mail-on-subscription-changes',
-                              annotate.Boolean()),
+                              annotate.Boolean(
+            label=_('Notify owners on subscription changes'))),
             annotate.Argument('mail-on-forced-unsubscribe',
-                              annotate.Boolean()),
+                              annotate.Boolean(
+            label=_('Notify owners on forced unsubscribe'))),
             annotate.Argument('description',
-                              annotate.String(null='')),
-            ]),
-            action='Edit')
+                              annotate.String(null='',
+                                              label=_('Description'))),
+            ],
+                                      label=_('Edit')),
+            action=_('Edit'))
 
-    def edit(self, **kw):
+    def edit(self, ctx, **kw):
         d = self.original.getConfig('subscription', 'posting',
                                     'mail-on-subscription-changes',
                                     'mail-on-forced-unsubscribe',
                                     'description')
-        d.addCallback(self.__edit, **kw)
+        d.addCallback(self.__edit, ctx, **kw)
         return d
 
-    def __edit(self, cfg, **kw):
+    def __edit(self, cfg, ctx, **kw):
         old = {}
         (old['subscription'],
          old['posting'],
@@ -143,21 +169,50 @@ class MailingListForOwner(rend.Fragment):
                 del kw[k]
 
         if not kw:
-            return 'Settings not changed.'
+            return _('Settings not changed.')
 
         def status(kw, old):
             keys = kw.keys()
             keys.sort()
+
             for k in keys:
-                yield 'changed %(key)s from %(old)s to %(new)s' % {
+                # TODO can't do _('foo %s bar') % _('quux'),
+                # so we flatten things manually
+
+                oldVal = old.get(k, None)
+                if oldVal is not None:
+                    oldVal = flat.ten.flatten(self.stringifyToLabel(oldVal),
+                                              ctx)
+
+                newVal = kw.get(k, None)
+                if newVal is not None:
+                    newVal = flat.ten.flatten(self.stringifyToLabel(newVal),
+                                              ctx)
+
+                # TODO translate/humanfriendlify k
+
+                yield _('changed %(key)s from %(old)s to %(new)s') % {
                     'key': k,
-                    'old': old.get(k, None),
-                    'new': kw.get(k, None),
+                    'old': oldVal,
+                    'new': newVal,
                     }
+
+        def commaify(iterable):
+            """Put add commas to sequence to separate multiple rounds."""
+            iterable = iter(iterable)
+            try:
+                first = iterable.next()
+            except StopIteration:
+                return
+            yield first
+            for item in iterable:
+                yield ', '
+                yield item
+
         d = self.original.edit(**kw)
-        d.addCallback(common.statusPrefix, 'Edited settings: %(edits)s' % {
-            'edits': ', '.join(status(kw, old)),
-            })
+        d.addCallback(common.statusPrefix,
+                      _('Edited settings: '),
+                      commaify(status(kw, old)))
         return d
 
 class MailingListForAdmin(rend.Fragment):
@@ -166,15 +221,16 @@ class MailingListForAdmin(rend.Fragment):
             name='destroy',
             typeValue=annotate.Method(arguments=[
                     annotate.Argument('ctx', annotate.Context()),
-                    ]),
-            action='Destroy')
+                    ],
+                                      label=_('Destroy')),
+            action=_('Destroy'))
 
     def destroy(self, ctx):
         u = url.URL.fromContext(ctx)
         request = inevow.IRequest(ctx)
         request.setComponent(iformless.IRedirectAfterPost, u.curdir())
         d = self.original.destroy()
-        d.addCallback(common.statusPrefix, 'Destroyed list %s' % self.original.listname)
+        d.addCallback(common.statusPrefix, _('Destroyed list %s') % self.original.listname)
         return d
 
 class WebMailingList(rend.Page):
@@ -269,3 +325,6 @@ class WebMailingList(rend.Page):
 
     def data_description(self, ctx, data):
         return self.original.getConfig('description')
+
+    render_i18n = i18n.render()
+

@@ -1,7 +1,8 @@
 import os
 from nevow import rend, loaders, static
 from formless import annotate, webform
-from eocmanage import weblist, eocinterface, zebra, common
+from eocmanage import weblist, eocinterface, zebra, common, i18n
+from eocmanage.i18n import _
 from eocmanage.common import EmailAddress
 
 class EocManage(rend.Page):
@@ -51,20 +52,21 @@ class EocManage(rend.Page):
     def _createFailed(self, reason, name):
         reason.trap(eocinterface.EocFailed)
         raise annotate.ValidateError({'name': reason.getErrorMessage()},
-                                     formErrorMessage='Eoc failed',
+                                     formErrorMessage=_('Eoc failed'),
                                      partialForm={'name': name})
 
     def bind_create(self, ctx):
         return annotate.MethodBinding(
             name='create',
             typeValue=annotate.Method(arguments=[
-                    annotate.Argument('name', EmailAddress()),
-                    ]),
-            action='Create')
+                    annotate.Argument('name', EmailAddress(label=_('List address'))),
+                    ],
+                                      label=_('Create')),
+            action=_('Create a New List'))
 
     def create(self, name):
         d = self.original.create(name, [self.original.getCommandAddress(name, 'ignore')])
-        d.addCallback(common.statusPrefix, 'Created list %s' % name)
+        d.addCallback(common.statusPrefix, _('Created list %s') % name)
         d.addErrback(self._createFailed, name)
         return d
 
@@ -76,3 +78,5 @@ class EocManage(rend.Page):
 
     def data_adminPublicAddress(self, ctx, data):
         return self.original.adminPublicAddress
+
+    render_i18n = i18n.render()

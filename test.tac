@@ -1,5 +1,5 @@
 from twisted.application import service, strports
-from nevow import appserver
+from nevow import appserver, inevow, i18n
 
 from eocmanage import webroot, eocinterface
 from eocmanage.test.util import webutil, listutil
@@ -7,9 +7,13 @@ from eocmanage.test.util import webutil, listutil
 eocSite = listutil.getSite(adminPublicAddress='listmaster@example.com')
 root = webroot.EocManage(eocSite)
 root.child_mockauth = webutil.MockAuth()
+#root.remember(['fi'], inevow.ILanguages)
 
 site = appserver.NevowSite(root)
 site.resource.addSlash = True
+
+site.remember(i18n.I18NConfig(localeDir='build/locale'))
+
 
 application = service.Application("examples")
 svc = strports.service("8080", site)

@@ -17,20 +17,20 @@ code 200
 find "Edit"
 find "Subscription"
 
-find '<input checked="checked" type="radio" name="subscription" value="free">free</input>'
-find '<input checked="checked" type="radio" name="posting" value="free">free</input>'
+find '<input checked="checked" type="radio" name="subscription" value="free">Free</input>'
+find '<input checked="checked" type="radio" name="posting" value="free">Free</input>'
 formvalue edit subscription moderated
 formvalue edit posting auto
 submit
 code 200
-find "Edited settings: changed posting from free to auto, changed subscription from free to moderated[.]"
+find "Edited settings: changed posting from Free to Automatic, changed subscription from Free to Moderated[.]"
 
 # changes actually happened
-find '<input checked="checked" type="radio" name="subscription" value="moderated">moderated</input>'
-find '<input checked="checked" type="radio" name="posting" value="auto">auto</input>'
+find '<input checked="checked" type="radio" name="subscription" value="moderated">Moderated</input>'
+find '<input checked="checked" type="radio" name="posting" value="auto">Automatic</input>'
 
 # and are persistent, too
 reload
 code 200
-find '<input checked="checked" type="radio" name="subscription" value="moderated">moderated</input>'
-find '<input checked="checked" type="radio" name="posting" value="auto">auto</input>'
+find '<input checked="checked" type="radio" name="subscription" value="moderated">Moderated</input>'
+find '<input checked="checked" type="radio" name="posting" value="auto">Automatic</input>'

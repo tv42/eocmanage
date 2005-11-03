@@ -2,26 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:nevow="http://nevow.com/ns/nevow/0.1">
   <head>
-    <title>Overview of Mailing Lists</title>
+    <title nevow:render="i18n">Overview of Mailing Lists</title>
     <link rel="stylesheet" type="text/css" href="_freeform.css" />
     <link rel="stylesheet" type="text/css" href="_style/eocmanage.css" />
   </head>
   <body>
-    <h1>Overview of Mailing Lists</h1>
+    <h1 nevow:render="i18n">Overview of Mailing Lists</h1>
 
     <nevow:invisible nevow:render="statusmessage"/>
 
     <p>
-      Below is a listing of all the public mailing lists.
+      <span nevow:render="i18n">Below is a listing of all the public mailing lists.</span>
       <!-- TODO on lists.example.com -->
 
-      Choose a list to subscribe, unsubscribe or to get more
-      information about it.
+      <span nevow:render="i18n">Choose a list to subscribe, unsubscribe or to get more information about it.</span>
     </p>
 
     <nevow:invisible nevow:render="if" nevow:data="adminPublicAddress">
       <p nevow:pattern="True">
-	You can ask for help by emailing
+	<span nevow:render="i18n">You can ask for help by emailing</span>
 	<a>
 	  <nevow:attr name="href">mailto:<nevow:invisible nevow:render="string"/></nevow:attr>
 	  <nevow:invisible nevow:render="string"/></a>.
@@ -30,16 +29,16 @@
 
     <nevow:invisible nevow:render="ifAdmin">
       <nevow:invisible nevow:pattern="True">
-	<h2>List Administration</h2>
+	<h2 nevow:render="i18n">List Administration</h2>
 	<div class="eocmanage-admin" nevow:render="form" />
       </nevow:invisible>
     </nevow:invisible>
 
-    <h2>All Lists</h2>
+    <h2 nevow:render="i18n">All Lists</h2>
     <table nevow:render="sequence" nevow:data="list">
       <tr nevow:pattern="header" nevow:render="zebra">
-	<th>List</th>
-	<th>Description</th>
+	<th nevow:render="i18n">List</th>
+	<th nevow:render="i18n">Description</th>
       </tr>
       <tr nevow:pattern="item" nevow:render="zebra">
 	<td nevow:data="address">
@@ -58,13 +57,15 @@
 	  </nevow:invisible>
 	</td>
       </tr>
-      <tr nevow:pattern="empty" nevow:render="zebra"><td colspan="2">No lists.</td></tr>
+      <tr nevow:pattern="empty" nevow:render="zebra">
+	<td colspan="2" nevow:render="i18n">No lists.</td>
+      </tr>
     </table>
 
     <p class="eocmanage-footer">
-      These lists are managed by
+      <span nevow:render="i18n">These lists are managed by</span>
       <a href="http://liw.iki.fi/liw/eoc/">EoC</a>,
-      web interface is powered by
+      <span nevow:render="i18n">web interface is powered by</span>
       <a href="http://www.inoi.fi/open/trac/eocmanage">eocmanage</a>.
     </p>
   </body>
