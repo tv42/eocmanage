@@ -96,6 +96,9 @@ try:
     twillEnv = {}
     twillEnv.update(os.environ)
     twillEnv['PYTHONPATH'] = ':'.join(['.',
+                                       # TODO work around missing twill features,
+                                       # needs my hacked twill
+                                       os.path.expanduser('~/src/twill/trunk'),
                                        twillEnv.get('PYTHONPATH', '.')])
     returncode = subprocess.call(args=[
         os.path.expanduser('twill-sh'),
