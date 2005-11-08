@@ -157,7 +157,10 @@ TODO
          [
         'eocmanage/main.html',
         'eocmanage/list.html',
+        ]),
 
+        (os.path.join(sysconfig.get_python_lib(), 'eocmanage', 'style'),
+         [
         'eocmanage/style/eocmanage.css',
         ]),
         ])
