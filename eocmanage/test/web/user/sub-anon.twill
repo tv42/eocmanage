@@ -17,7 +17,7 @@ notfind "jack@smith\.example\.com"
 eoc_is_subscriber foo@bar.example.com jack@smith.example.com False
 
 formvalue subscribe address jack@smith.example.com
-submit subscribe
+submit requestSubscribe
 code 200
 find "Subscription confirmation request sent to jack@smith[.]example[.]com"
 # not subscribed before confirmation is sent
@@ -31,7 +31,7 @@ eoc_is_subscriber foo@bar.example.com jack@smith.example.com True
 
 reload
 formvalue unsubscribe requestUnsubscribe foo
-submit unsubscribe
+submit requestUnsubscribe
 code 200
 find "Unsubscription confirmation request sent to jack@smith[.]example[.]com"
 # not unsubscribed before confirmation is sent
