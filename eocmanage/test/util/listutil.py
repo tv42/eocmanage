@@ -1,5 +1,5 @@
 from twisted.trial.util import wait
-import os, shutil, errno
+import os, shutil, errno, re
 from eocmanage import eocinterface
 
 # Everything in this file would need to go through sudo,
@@ -61,7 +61,13 @@ def _eoc_confirm_subunsub_accept(subunsub, name, address):
         ]),
         "Arguments to sendmail do not match")
     _line(f, '')
-    _line(f, "From: %s-help@%s" % (local, domain))
+    from_ = f.readline()
+    assert from_ in [
+        # eoc v1.0.x
+        "From: %s-help@%s\n" % (local, domain),
+        # eoc v1.2.x
+        "From: EoC <%s-help@%s>\n" % (local, domain),
+        ], "Invalid From line: %r" % from_ 
     _line(f, "To: %s" % address)
 
     replyto = f.readline()
@@ -79,7 +85,20 @@ def _eoc_confirm_subunsub_accept(subunsub, name, address):
 
     while True:
         line = f.readline()
+        assert line, 'EOF before MIME separator.'
         if line.startswith(' - - - - - - - -'):
+            # eoc 1.0.x
+            break
+        elif re.search('^--[0-9a-f]{32}/[0-9a-f]{32}$', line):
+            # eoc 1.2.x
+            # find second boundary
+            while True:
+                line = f.readline()
+                assert line, 'EOF before second MIME separator.'
+                if re.search('^--[0-9a-f]{32}/[0-9a-f]{32}$', line):
+                    break
+            _line(f, 'Content-type: message/rfc822')
+            _line(f, 'Content-disposition: inline; filename=original.txt')
             break
 
     _line(f, '')
@@ -98,7 +117,16 @@ def _eoc_confirm_subunsub_accept(subunsub, name, address):
     assert line.startswith('by the web application at ')
     line = f.readline()
     assert line.startswith('from the web client ')
-    _line(f, '')
+
+    line = f.readline()
+    if re.search('^--[0-9a-f]{32}/[0-9a-f]{32}--', line):
+        # eoc 1.2.x
+        pass
+    elif line == '\n':
+        # eoc 1.0.x
+        pass
+    else:
+        assert line == '', 'Last line should be empty: %r' % line
 
     f.close()
     os.unlink(filename)
@@ -125,14 +153,28 @@ def _eoc_confirm_subunsub_accept(subunsub, name, address):
                    address]),
           "Arguments to sendmail do not match")
     _line(f, '')
-    _line(f, "From: %s-help@%s" % (local, domain))
+    from_ = f.readline()
+    assert from_ in [
+        # eoc v1.0.x
+        "From: %s-help@%s\n" % (local, domain),
+        # eoc v1.2.x
+        "From: EoC <%s-help@%s>\n" % (local, domain),
+        ], "Invalid From line: %r" % from_ 
     _line(f, "To: %s" % address)
     if subunsub == 'subscribe':
         what = 'Welcome to'
     else:
         what = 'Goodbye from'
     _line(f, "Subject: %s %s" % (what, name))
-    _line(f, "")
+    line = f.readline()
+    if line == 'Content-type: text/plain; charset=us-ascii\n':
+        # eoc 1.2.x
+        _line(f, "")
+    elif line == '\n':
+        # eoc 1.0.x
+        pass
+    else:
+        assert line == '', 'Header should end now: %r' % line
 
     f.close()
     os.unlink(filename)
