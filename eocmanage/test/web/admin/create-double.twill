@@ -17,6 +17,5 @@ find "foo@bar\.example\.com"
 formvalue create name foo@bar.example.com
 submit
 code 200
-# TODO want a more explicit error message
 find "Eoc failed"
-find "eoc[.]ListExists: foo@bar[.]example[.]com"
+find "eoc\.ListExists: (Mailing list )?foo@bar.example.com( alreadys? exists)?"
