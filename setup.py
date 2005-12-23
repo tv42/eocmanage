@@ -124,16 +124,21 @@ class install_locale(cmd.Command):
 
 if __name__=='__main__':
     setup(name="eocmanage",
-	  description="TODO",
+	  description="Web interface to the Enemies-of-Carlotta Mailing List Manager",
 	  long_description="""
 
-TODO
+Eocmanage provides a simple WWW interface to managing multiple EoC
+mailing lists.
+
+It is designed to enable ISPs to provide their clients with easily
+administratable mailing lists, to create a virtual domain
+lists.example.com with mailing lists in it, etc.
 
 """.strip(),
 	  author="Tommi Virtanen",
 	  author_email="tv@inoi.fi",
-	  #url="TODO",
-	  license="TODO",
+	  url="http://www.inoi.fi/open/trac/eocmanage",
+	  license="GNU GPL",
 
           cmdclass={'build': build,
                     'build_locale': build_locale,
