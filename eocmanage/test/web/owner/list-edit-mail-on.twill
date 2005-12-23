@@ -23,7 +23,8 @@ formvalue edit mail-on-subscription-changes True
 formvalue edit mail-on-forced-unsubscribe True
 submit
 code 200
-find "Edited settings: changed mail-on-forced-unsubscribe from False to True, changed mail-on-subscription-changes from False to True[.]"
+title "^Mailing List foo@bar\.example\.com$"
+find '<div class="statusmessage">Edited settings: changed whether to notify owners on forced unsubscription from False to True, changed whether to notify owners on subscription from False to True\.</div>'
 
 # changes actually happened
 find '<input checked="checked" name="mail-on-subscription-changes" value="True" class="freeform-input-checkbox" type="checkbox" id="edit-mail-on-subscription-changes" />'

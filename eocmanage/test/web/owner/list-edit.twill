@@ -23,7 +23,7 @@ formvalue edit subscription moderated
 formvalue edit posting auto
 submit
 code 200
-find "Edited settings: changed posting from Free to Automatic, changed subscription from Free to Moderated[.]"
+find '<div class="statusmessage">Edited settings: changed posting from Free to Automatic, changed subscription from Free to Moderated\.</div>'
 
 # changes actually happened
 find '<input checked="checked" type="radio" name="subscription" value="moderated">Moderated</input>'

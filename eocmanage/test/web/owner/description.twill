@@ -26,7 +26,7 @@ formvalue edit description "A new description edited from the web"
 submit
 code 200
 # TODO quote the following
-find "Edited settings: changed description from  to A new description edited from the web[.]"
+find '<div class="statusmessage">Edited settings: added description \'A new description edited from the web\'\.</div>'
 
 # changes actually happened
 find '<p class="eocmanage-list-description">A new description edited from the web</p>'
@@ -55,7 +55,7 @@ formvalue edit description ""
 submit
 code 200
 # TODO quote the following
-find "Edited settings: changed description from A new description edited from the web to [.]"
+find '<div class="statusmessage">Edited settings: removed description, used to be \'A new description edited from the web\'\.</div>'
 notfind eocmanage-list-description
 find '<input id="edit-description" type="text" class="freeform-input-text" value="" name="description" />'
 

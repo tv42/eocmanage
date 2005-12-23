@@ -153,6 +153,48 @@ class MailingListForOwner(rend.Fragment):
         d.addCallback(self.__edit, ctx, **kw)
         return d
 
+    def _edit_status_subscription(self, old, new):
+        return (_('changed subscription from %(old)s to %(new)s')
+                % {
+            'old': old,
+            'new': new,
+            })
+
+    def _edit_status_posting(self, old, new):
+        return (_('changed posting from %(old)s to %(new)s')
+                % {
+            'old': old,
+            'new': new,
+            })
+
+    def _edit_status_mail_on_subscription_changes(self, old, new):
+        return (_('changed whether to notify owners on '
+                  'subscription from %(old)s to %(new)s')
+                % {
+            'old': old,
+            'new': new,
+            })
+
+    def _edit_status_mail_on_forced_unsubscribe(self, old, new):
+        return (_('changed whether to notify owners on forced '
+                  'unsubscription from %(old)s to %(new)s')
+                % {
+            'old': old,
+            'new': new,
+            })
+
+    def _edit_status_description(self, old, new):
+        if not old:
+            return _('added description %r') % new
+        elif not new:
+            return _('removed description, used to be %r') % old
+        else:
+            return (_('changed description from %(old)r to %(new)r')
+                    % {
+                'old': old,
+                'new': new,
+                })
+
     def __edit(self, cfg, ctx, **kw):
         old = {}
         (old['subscription'],
@@ -189,13 +231,20 @@ class MailingListForOwner(rend.Fragment):
                     newVal = flat.ten.flatten(self.stringifyToLabel(newVal),
                                               ctx)
 
-                # TODO translate/humanfriendlify k
+                reporter = getattr(self,
+                                   '_edit_status_%s' % k.replace('-', '_'),
+                                   None)
+                assert reporter is not None, 'key was %r' % k.replace('-', '_')
+                if reporter is None:
+                    reporter = (lambda old, new:
+                                _('changed %(key)s from %(old)s to %(new)s')
+                                % {
+                        'key': k,
+                        'old': old,
+                        'new': new,
+                        })
 
-                yield _('changed %(key)s from %(old)s to %(new)s') % {
-                    'key': k,
-                    'old': oldVal,
-                    'new': newVal,
-                    }
+                yield reporter(oldVal, newVal)
 
         def commaify(iterable):
             """Put add commas to sequence to separate multiple rounds."""
