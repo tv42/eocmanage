@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+# Copyright © 2002,2003 Colin Walters <walters@debian.org>
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/python-distutils.mk
+
+DEB_DH_ALWAYS_EXCLUDE := .git
+
+docdir = debian/$(1)/usr/share/doc/$(1)
+binary-post-install/%::
+	awk '/^# See the file .*/ {while (getline l <"/dev/fd/6") {print l}; getline}; {print}' \
+		<'$(call docdir,$*)/copyright' \
+		6<LICENSE \
+		>'$(call docdir,$*)/copyright.tmp'
+	mv \
+		'$(call docdir,$*)/copyright.tmp' \
+		'$(call docdir,$*)/copyright'

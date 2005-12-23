@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ]; then
+    # idea stolen from postfix.postinst: make sure our user exists,
+    # simplest portable way to check is to chown something.
+    cd /var/lib/eocmanage
+    touch temp
+    CHOWN=''
+    if ! chown eocmanage temp 2>/dev/null; then
+	adduser --quiet --system --home /var/lib/eocmanage \
+	    --no-create-home --disabled-password \
+	    --gecos 'EoC Mailing List Manager' --group eocmanage
+	CHOWN=1
+    fi
+    rm -f temp 2>/dev/null
+    # if we created the user, bring the files back from root
+    if [ "$CHOWN" ]; then
+	chown -R eocmanage:eocmanage /var/lib/eocmanage \
+	    2>&1 || true
+    fi
+fi
+
+#DEBHELPER#

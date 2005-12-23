@@ -1,0 +1,16 @@
+Source: eocmanage
+Section: python
+Priority: optional
+Maintainer: Tommi Virtanen <tv@debian.org>
+Standards-Version: 3.6.1
+Build-Depends-Indep: @cdbs@, python-dev, debhelper (>= 4.1.68)
+
+Package: eocmanage
+Architecture: all
+Depends: ${python:Depends}, enemies-of-carlotta
+Suggests: postfix
+Description: `python ./setup.py --description`
+`python ./setup.py --long-description | sed 's/^$/./; s/^/ /'`
+ .
+ Homepage: `python ./setup.py --url`
+

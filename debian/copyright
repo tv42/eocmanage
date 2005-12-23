@@ -1,0 +1,13 @@
+This package was debianized by Tommi Virtanen tv@debian.org on
+Wed, 27 Jul 2005 00:18:24 +0300.
+
+It was originally downloaded from http://www.inoi.fi/open/trac/eocmanage
+
+Upstream Author: Tommi Virtanen <tv@inoi.fi>
+
+Copyright:
+
+# See the file LICENSE at the top of the source tree.
+
+On Debian systems, the complete text of the GNU General Public License
+can be found in '/usr/share/common-licenses/GPL'.

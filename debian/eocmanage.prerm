@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ]; then
+    chown -R root:root /var/lib/eocmanage
+    userdel eocmanage
+fi
+
+#DEBHELPER#

@@ -1,0 +1,46 @@
+The nicest way to run a lists.example.com with EoC and Postfix
+==============================================================
+
+This is the nicest way I have seen so far.
+
+Development versions of eoc are able to take SENDER and RECIPIENT and
+command line args, and have sane behaviour with --incoming without the
+need for --is-list. When they are available for production use, the
+extra shell script can be removed.
+
+
+Add a user and group "eoc" with home directory /var/lib/eoc. Create lists as that user.
+
+$ sudo adduser --system --home /var/lib/eoc --gecos 'Mailing Lists' --group --disabled-password --disabled-login eoc
+
+
+/etc/postfix/master.conf:
+
+--8<--
+eoc     unix    -       n       n       -       2       pipe
+  flags=R user=eoc
+  argv=/usr/bin/eocmanage-deliver ${sender} ${recipient}
+--8<--
+
+/etc/postfix/main.conf:
+
+--8<--
+eoc_destination_recipient_limit = 1
+transport_maps = hash:/var/lib/eocmanage/postfix/transport,
+		 pcre:/var/lib/eocmanage/postfix/transport.pcre
+--8<--
+
+/var/lib/eocmanage/postfix/transport:
+
+--8<--
+lists.example.com       eoc:@lists.example.com
+--8<--
+
+/var/lib/eocmanage/postfix/transport.pcre:
+
+--8<--
+/^someprefix(-(foo|bar)?)@example\.com$/       eoc:someprefix@lists.example.com
+--8<--
+
+sudo postmap /var/lib/eocmanage/postfix/transport
+sudo /etc/init.d/postfix reload

@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+SENDER="$1"
+shift
+RECIPIENT="$1"
+shift
+
+export SENDER RECIPIENT
+
+if ! /usr/bin/enemies-of-carlotta --is-list --name "$RECIPIENT"; then
+        exit 67 #EX_NOUSER from sysexit.h
+fi
+
+exec /usr/bin/enemies-of-carlotta --incoming --quiet
