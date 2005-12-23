@@ -25,7 +25,6 @@ find '<input id="edit-description" type="text" class="freeform-input-text" value
 formvalue edit description "A new description edited from the web"
 submit
 code 200
-# TODO quote the following
 find '<div class="statusmessage">Edited settings: added description \'A new description edited from the web\'\.</div>'
 
 # changes actually happened
@@ -54,7 +53,6 @@ code 200
 formvalue edit description ""
 submit
 code 200
-# TODO quote the following
 find '<div class="statusmessage">Edited settings: removed description, used to be \'A new description edited from the web\'\.</div>'
 notfind eocmanage-list-description
 find '<input id="edit-description" type="text" class="freeform-input-text" value="" name="description" />'
