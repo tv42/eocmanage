@@ -205,9 +205,18 @@ def eoc_confirm_unsub_accept(name, address):
     """
     return _eoc_confirm_subunsub_accept('unsubscribe', name, address)
 
+def eoc_set_config(name, variable, value):
+    assert '@' in name
+    assert not name.startswith('.')
+    site = getSite()
+    l = site.getList(name)
+    d = l.setConfig(**{variable: value})
+    r = wait(d)
+
 __all__ = ['eoc_destroy',
            'eoc_create',
            'eoc_confirm_sub_accept',
            'eoc_confirm_unsub_accept',
            'eoc_is_subscriber',
+           'eoc_set_config',
            ]

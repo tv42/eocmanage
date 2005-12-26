@@ -1,0 +1,50 @@
+go mockauth/login/pwner@example.com
+code 200
+back
+
+extend_with eocmanage.test.util.listutil
+eoc_destroy foo@bar.example.com
+reload
+notfind "foo@bar\.example\.com"
+
+eoc_create foo@bar.example.com pwner@example.com pwnstoo@example.com
+reload
+find "foo@bar\.example\.com"
+
+eoc_set_config foo@bar.example.com posting foo
+
+follow "foo@bar\.example\.com"
+title "Mailing List foo@bar\.example\.com"
+code 200
+find "Edit"
+find "Subscription"
+
+find '<input checked="checked" type="radio" name="subscription" value="free">Free</input>'
+# none of the posting radio buttons are checked
+find '<span class="freeform-input"><span id="edit-posting"><div class="freeform-radio-option"><input type="radio" name="posting" value="free">Free</input></div><div class="freeform-radio-option"><input type="radio" name="posting" value="auto">Automatic</input></div><div class="freeform-radio-option"><input type="radio" name="posting" value="moderated">Moderated</input></div></span></span>'
+formvalue edit edit dummy
+submit
+code 200
+title "Mailing List foo@bar\.example\.com"
+
+notfind 'Edited settings'
+notfind '<div class="freeform-form-error"><!--\s*No error for error key: edit\s*--></div>'
+find '<div class="freeform-form-error">Error:</div>'
+find '<span class="freeform-input"><span id="edit-posting"><div class="freeform-radio-option"><input type="radio" name="posting" value="free">Free</input></div><div class="freeform-radio-option"><input type="radio" name="posting" value="auto">Automatic</input></div><div class="freeform-radio-option"><input type="radio" name="posting" value="moderated">Moderated</input></div></span></span><div class="freeform-error">Please choose something</div>'
+
+formvalue edit posting auto
+submit
+code 200
+title "Mailing List foo@bar\.example\.com"
+
+find '<div class="statusmessage">Edited settings: changed posting from foo to Automatic\.</div>'
+
+# changes actually happened
+find '<input checked="checked" type="radio" name="subscription" value="free">Free</input>'
+find '<input checked="checked" type="radio" name="posting" value="auto">Automatic</input>'
+
+# and are persistent, too
+reload
+code 200
+find '<input checked="checked" type="radio" name="subscription" value="free">Free</input>'
+find '<input checked="checked" type="radio" name="posting" value="auto">Automatic</input>'
