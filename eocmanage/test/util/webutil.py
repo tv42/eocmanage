@@ -30,7 +30,5 @@ class MockAuth(object):
 
     def locateChild(self, ctx, segments):
         child = getattr(self, 'child_%s' % segments[0], None)
-        if child is None:
-            return child
-        else:
-            return child, segments[1:]
+        # it's ok for child to be None here
+        return child, segments[1:]
