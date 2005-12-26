@@ -1,0 +1,10 @@
+*.py[co]
+/dot-eoc
+/_trial_temp
+/build
+/debian/*.debhelper
+/debian/*.substvars
+/debian/eocmanage
+/debian/files
+/debian/control
+.#*
