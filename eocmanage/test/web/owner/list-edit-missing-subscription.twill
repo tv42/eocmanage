@@ -14,7 +14,7 @@ find "foo@bar\.example\.com"
 eoc_set_config foo@bar.example.com subscription foo
 
 follow "foo@bar\.example\.com"
-title "Mailing List foo@bar\.example\.com"
+title "^Mailing List foo@bar\.example\.com$"
 code 200
 find "Edit"
 find "Subscription"
@@ -25,7 +25,7 @@ find '<input checked="checked" type="radio" name="posting" value="free">Free</in
 formvalue edit edit dummy
 submit
 code 200
-title "Mailing List foo@bar\.example\.com"
+title "^Mailing List foo@bar\.example\.com$"
 
 notfind 'Edited settings'
 notfind '<div class="freeform-form-error"><!--\s*No error for error key: edit\s*--></div>'
@@ -35,7 +35,7 @@ find '<span class="freeform-input"><span id="edit-subscription"><div class="free
 formvalue edit subscription free
 submit
 code 200
-title "Mailing List foo@bar\.example\.com"
+title "^Mailing List foo@bar\.example\.com$"
 
 find '<div class="statusmessage">Edited settings: changed subscription from foo to Free\.</div>'
 

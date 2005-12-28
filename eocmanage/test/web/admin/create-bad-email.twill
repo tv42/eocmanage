@@ -7,37 +7,37 @@ find "Create"
 formvalue create name ""
 submit
 code 200
-find "Error:"
-find "Please enter an email address"
+find '<div class="freeform-form-error">Error:</div>'
+find '<span class="freeform-input"><input id="create-name" type="text" class="freeform-input-text" value="" name="name" /></span><div class="freeform-error">Please enter an email address\.</div>'
 
 formvalue create name <>
 submit
 code 200
-find "Error:"
-find "Please enter an email address"
+find '<div class="freeform-form-error">Error:</div>'
+find '<span class="freeform-input"><input id="create-name" type="text" class="freeform-input-text" value="&lt;&gt;" name="name" /></span><div class="freeform-error">Please enter an email address\.</div>'
 
 formvalue create name "John Doe <>"
 submit
 code 200
-find "Error:"
-find "Please enter an email address"
+find '<div class="freeform-form-error">Error:</div>'
+find '<span class="freeform-input"><input id="create-name" type="text" class="freeform-input-text" value="John Doe &lt;&gt;" name="name" /></span><div class="freeform-error">Please enter an email address\.</div>'
 
 formvalue create name foo
 submit
 code 200
-find "Error:"
-find "Please include a domain in the email address"
+find '<div class="freeform-form-error">Error:</div>'
+find '<span class="freeform-input"><input id="create-name" type="text" class="freeform-input-text" value="foo" name="name" /></span><div class="freeform-error">Please include a domain in the email address</div>'
 
 # TODO email.Utils.parseaddr('foo@bar@baz') == ('', 'foo@bar')
 # as long as that is broken, we give up here..
 ## formvalue create name foo@bar@baz
 ## submit
 ## code 200
-## find "Error:"
-## find "Please include a valid hostname in the email address"
+## find '<div class="freeform-form-error">Error:</div>'
+## find '<span class="freeform-input"><input id="create-name" type="text" class="freeform-input-text" value="foo@bar@baz" name="name" /></span><div class="freeform-error">Please include a valid hostname in the email address</div>'
 
 formvalue create name @foo
 submit
 code 200
-find "Error:"
-find "Please include a local part in the email address"
+find '<div class="freeform-form-error">Error:</div>'
+find '<span class="freeform-input"><input id="create-name" type="text" class="freeform-input-text" value="@foo" name="name" /></span><div class="freeform-error">Please include a local part in the email address</div>'

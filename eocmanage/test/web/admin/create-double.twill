@@ -11,11 +11,12 @@ notfind "foo@bar.example.com"
 formvalue create name foo@bar.example.com
 submit
 code 200
-find "Created list foo@bar[.]example[.]com[.]"
+find '<div class="statusmessage">Created list foo@bar\.example\.com\.</div>'
 reload		# get rid of status message
 find "foo@bar\.example\.com"
 formvalue create name foo@bar.example.com
 submit
 code 200
-find "Eoc failed"
-find "eoc\.ListExists: (Mailing list )?foo@bar.example.com( alreadys? exists)?"
+
+find '<div class="freeform-form-error">Eoc failed</div>'
+find '<span class="freeform-input"><input id="create-name" type="text" class="freeform-input-text" value="foo@bar\.example\.com" name="name" /></span><div class="freeform-error">Calling eoc failed: 1: [^<]*eoc\.ListExists: (Mailing list )?foo@bar\.example\.com( alreadys? exists)?\s*</div>'

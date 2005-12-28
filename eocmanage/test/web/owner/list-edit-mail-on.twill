@@ -12,7 +12,7 @@ reload
 find "foo@bar\.example\.com"
 
 follow "foo@bar\.example\.com"
-title "Mailing List foo@bar.example.com"
+title "^Mailing List foo@bar\.example\.com$"
 code 200
 find "Edit"
 find "Subscription"

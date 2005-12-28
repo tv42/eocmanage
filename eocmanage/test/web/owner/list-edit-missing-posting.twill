@@ -14,7 +14,7 @@ find "foo@bar\.example\.com"
 eoc_set_config foo@bar.example.com posting foo
 
 follow "foo@bar\.example\.com"
-title "Mailing List foo@bar\.example\.com"
+title "^Mailing List foo@bar\.example\.com$"
 code 200
 find "Edit"
 find "Subscription"
@@ -25,7 +25,7 @@ find '<span class="freeform-input"><span id="edit-posting"><div class="freeform-
 formvalue edit edit dummy
 submit
 code 200
-title "Mailing List foo@bar\.example\.com"
+title "^Mailing List foo@bar\.example\.com$"
 
 notfind 'Edited settings'
 notfind '<div class="freeform-form-error"><!--\s*No error for error key: edit\s*--></div>'
@@ -35,7 +35,7 @@ find '<span class="freeform-input"><span id="edit-posting"><div class="freeform-
 formvalue edit posting auto
 submit
 code 200
-title "Mailing List foo@bar\.example\.com"
+title "^Mailing List foo@bar\.example\.com$"
 
 find '<div class="statusmessage">Edited settings: changed posting from foo to Automatic\.</div>'
 

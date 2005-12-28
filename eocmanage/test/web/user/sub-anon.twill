@@ -19,7 +19,7 @@ eoc_is_subscriber foo@bar.example.com jack@smith.example.com False
 formvalue subscribe address jack@smith.example.com
 submit requestSubscribe
 code 200
-find "Subscription confirmation request sent to jack@smith[.]example[.]com"
+find '<div class="statusmessage">Subscription confirmation request sent to jack@smith\.example\.com\.</div>'
 # not subscribed before confirmation is sent
 eoc_is_subscriber foo@bar.example.com jack@smith.example.com False
 # address was remembered
@@ -33,7 +33,7 @@ reload
 formvalue unsubscribe requestUnsubscribe foo
 submit requestUnsubscribe
 code 200
-find "Unsubscription confirmation request sent to jack@smith[.]example[.]com"
+find '<div class="statusmessage">Unsubscription confirmation request sent to jack@smith\.example\.com\.</div>'
 # not unsubscribed before confirmation is sent
 eoc_is_subscriber foo@bar.example.com jack@smith.example.com True
 # address was remembered
