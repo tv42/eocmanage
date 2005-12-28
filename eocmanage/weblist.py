@@ -1,8 +1,9 @@
-import os, time
+from zope.interface import implements
+import time
 from twisted.internet import defer
-from nevow import inevow, loaders, rend, url, flat
+from nevow import inevow, loaders, rend, url, flat, util
 from formless import iformless, annotate, webform
-from eocmanage import zebra, common, i18n
+from eocmanage import zebra, common, i18n, skin
 from eocmanage.i18n import _
 from eocmanage.common import EmailAddress
 
@@ -286,20 +287,13 @@ class MailingListForAdmin(rend.Fragment):
         d.addCallback(common.statusPrefix, _('Destroyed list %s') % self.original.listname)
         return d
 
-class WebMailingList(rend.Page):
-    docFactory = loaders.xmlfile('list.html',
-                                 templateDir=os.path.split(os.path.abspath(__file__))[0])
-
-
-    def __init__(self, *a, **kw):
-        rend.Page.__init__(self, *a, **kw)
-        self.remember(self.original, common.ICurrentList)
+class WebMailingListFragment(rend.Fragment):
+    docFactory = loaders.xmlfile(
+        util.resource_filename('eocmanage', 'list.html'),
+        pattern='thecontent')
 
     def data_name(self, ctx, data):
         return self.original.listname
-
-    def configurable_user(self, ctx):
-        return MailingListForUser(self.original)
 
     def render_form_user(self, ctx, data):
         address = common.IEmailAddress(ctx)
@@ -328,9 +322,6 @@ class WebMailingList(rend.Page):
         d.addCallback(_gotDefaults, ctx)
         return d
 
-    def configurable_owner(self, ctx):
-        return MailingListForOwner(self.original)
-
     def render_form_owner(self, ctx, data):
         d = self.original.getConfig('subscription',
                                     'posting',
@@ -358,9 +349,6 @@ class WebMailingList(rend.Page):
         d.addCallback(_cb, ctx)
         return d
 
-    def configurable_admin(self, ctx):
-        return MailingListForAdmin(self.original)
-
     def render_form_admin(self, ctx, data):
         return ctx.tag[
             webform.renderForms('admin'),
@@ -381,3 +369,34 @@ class WebMailingList(rend.Page):
 
     render_i18n = i18n.render()
 
+
+class WebMailingList(object):
+    implements(skin.ISkinnable,
+               inevow.IRenderer,
+               iformless.IConfigurableFactory)
+
+    title = None
+
+    stylesheets = [
+        '_freeform.css',
+        '_style/eocmanage.css',
+        ]
+
+    def __init__(self, **kw):
+        self.list = kw.pop('list')
+        self.title = _('Mailing List %s') % self.list.listname
+        super(WebMailingList, self).__init__(**kw)
+
+    def rend(self, ctx, data):
+        ctx.remember(self.list, common.ICurrentList)
+        return WebMailingListFragment(self.list)
+
+    def locateConfigurable(self, ctx, name):
+        if name == 'user':
+            return MailingListForUser(self.list)
+        elif name == 'owner':
+            return MailingListForOwner(self.list)
+        elif name == 'admin':
+            return MailingListForAdmin(self.list)
+        else:
+            return None

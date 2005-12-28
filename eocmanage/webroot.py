@@ -1,38 +1,14 @@
-import os
-from nevow import rend, loaders, static
-from formless import annotate, webform
-from eocmanage import weblist, eocinterface, zebra, common, i18n
+from zope.interface import implements
+from nevow import rend, loaders, static, util, inevow
+from formless import annotate, webform, iformless
+from eocmanage import weblist, eocinterface, zebra, common, i18n, skin
 from eocmanage.i18n import _
 from eocmanage.common import EmailAddress
 
-class EocManage(rend.Page):
-    addSlash = True
-    docFactory = loaders.xmlfile('main.html',
-                                 templateDir=os.path.split(os.path.abspath(__file__))[0])
-
-
-    child__style = static.File(os.path.join(os.path.split(os.path.abspath(__file__))[0],
-                                            'style'))
-
-    def __init__(self, *a, **kw):
-        super(EocManage, self).__init__(*a, **kw)
-        self.putChild('_freeform.css', webform.defaultCSS)
-
-    def childFactory(self, ctx, name):
-        if name.startswith('_'):
-            return None
-        elif '@' not in name:
-            return None
-        else:
-            ml = self.original.getList(name)
-            d = ml.exists()
-            def cb(exists, ml):
-                if exists:
-                    return weblist.WebMailingList(ml)
-                else:
-                    return None
-            d.addCallback(cb, ml)
-            return d
+class EocManageFragment(rend.Fragment):
+    docFactory = loaders.xmlfile(
+        util.resource_filename('eocmanage', 'main.html'),
+        pattern='thecontent')
 
     def data_list(self, ctx, data):
         d = self.original.listLists()
@@ -80,3 +56,51 @@ class EocManage(rend.Page):
         return self.original.adminPublicAddress
 
     render_i18n = i18n.render()
+
+class EocManage(object):
+    implements(skin.ISkinnable,
+               inevow.IRenderer,
+               iformless.IConfigurableFactory)
+
+    addSlash = True
+
+    title = _('Overview of Mailing Lists')
+
+    stylesheets = [
+        '_freeform.css',
+        '_style/eocmanage.css',
+        ]
+
+    def __init__(self, **kw):
+        self.site = kw.pop('site')
+        super(EocManage, self).__init__(**kw)
+
+    def locateChild(self, ctx, segments):
+        if segments[0] == '_style':
+            return (static.File(util.resource_filename(
+                'eocmanage.webroot', 'style')),
+                    segments[1:])
+        elif segments[0] == '_freeform.css':
+            return webform.defaultCSS, segments[1:]
+        elif segments[0].startswith('_'):
+            return None, ()
+        elif '@' not in segments[0]:
+            return None, ()
+        else:
+            ml = self.site.getList(segments[0])
+            d = ml.exists()
+            def cb(exists, ml):
+                if exists:
+                    return weblist.WebMailingList(list=ml), segments[1:]
+                else:
+                    return None, ()
+            d.addCallback(cb, ml)
+            return d
+
+    def rend(self, ctx, data):
+        return EocManageFragment(self.site)
+
+    def locateConfigurable(self, ctx, name):
+        if name == '':
+            return EocManageFragment(self.site)
+

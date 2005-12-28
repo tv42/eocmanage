@@ -2,11 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:nevow="http://nevow.com/ns/nevow/0.1">
   <head>
-    <title nevow:render="i18n">Overview of Mailing Lists</title>
-    <link rel="stylesheet" type="text/css" href="_freeform.css" />
-    <link rel="stylesheet" type="text/css" href="_style/eocmanage.css" />
+    <title>Title goes here</title>
   </head>
   <body>
+    <nevow:invisible nevow:pattern="thecontent">
     <h1 nevow:render="i18n">Overview of Mailing Lists</h1>
 
     <nevow:invisible nevow:render="statusmessage"/>
@@ -68,5 +67,6 @@
       <span nevow:render="i18n">web interface is powered by</span>
       <a href="http://www.inoi.fi/open/trac/eocmanage">eocmanage</a>.
     </p>
+    </nevow:invisible>
   </body>
 </html>

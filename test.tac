@@ -5,7 +5,7 @@ from eocmanage import webroot, eocinterface
 from eocmanage.test.util import webutil, listutil
 
 eocSite = listutil.getSite(adminPublicAddress='listmaster@example.com')
-root = webroot.EocManage(eocSite)
+root = inevow.IResource(webroot.EocManage(site=eocSite))
 root.child_mockauth = webutil.MockAuth()
 #root.remember(['fi'], inevow.ILanguages)
 
