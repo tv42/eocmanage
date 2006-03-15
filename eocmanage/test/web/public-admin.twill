@@ -1,0 +1,17 @@
+title "^Overview of Mailing Lists$"
+notfind 'You can ask for help by emailing'
+notfind 'listmaster@example\.com'
+
+extend_with eocmanage.test.util.listutil
+
+eoc_set_public_admin listmaster@example.com
+reload
+code 200
+find 'You can ask for help by emailing'
+find 'listmaster@example\.com'
+
+eoc_unset_public_admin
+reload
+code 200
+notfind 'You can ask for help by emailing'
+notfind 'listmaster@example\.com'

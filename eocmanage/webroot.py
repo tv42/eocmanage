@@ -53,7 +53,7 @@ class EocManageFragment(rend.Fragment):
     render_statusmessage = common.render_statusmessage
 
     def data_adminPublicAddress(self, ctx, data):
-        return self.original.adminPublicAddress
+        return self.original.getAdminPublicAddress()
 
     render_i18n = i18n.render()
 

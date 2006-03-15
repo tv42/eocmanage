@@ -213,10 +213,26 @@ def eoc_set_config(name, variable, value):
     d = l.setConfig(**{variable: value})
     r = wait(d)
 
+def eoc_set_public_admin(name):
+    """Set the public admin address"""
+    assert '@' in name
+    assert not name.startswith('.')
+    path = os.path.join('dot-eoc', 'public-admin')
+    f = file(path, 'w')
+    print >>f, name
+    f.close()
+
+def eoc_unset_public_admin():
+    """Unset the public admin address"""
+    path = os.path.join('dot-eoc', 'public-admin')
+    os.unlink(path)
+
 __all__ = ['eoc_destroy',
            'eoc_create',
            'eoc_confirm_sub_accept',
            'eoc_confirm_unsub_accept',
            'eoc_is_subscriber',
            'eoc_set_config',
+           'eoc_set_public_admin',
+           'eoc_unset_public_admin',
            ]

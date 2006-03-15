@@ -4,7 +4,7 @@ from nevow import appserver, inevow, i18n
 from eocmanage import webroot, eocinterface
 from eocmanage.test.util import webutil, listutil
 
-eocSite = listutil.getSite(adminPublicAddress='listmaster@example.com')
+eocSite = listutil.getSite()
 root = inevow.IResource(webroot.EocManage(site=eocSite))
 root.child_mockauth = webutil.MockAuth()
 #root.remember(['fi'], inevow.ILanguages)

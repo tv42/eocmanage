@@ -45,11 +45,9 @@ class _GetEocResult(protocol.ProcessProtocol):
 
 class EocSite(object):
     asUser = None
-    adminPublicAddress = None
 
     def __init__(self, **kw):
         for attr in ['asUser',
-                     'adminPublicAddress',
                      ]:
             val = kw.pop(attr, None)
             if val is not None:
@@ -105,6 +103,17 @@ class EocSite(object):
         local, domain = listname.split('@', 1)
         name = '%s-%s@%s' % (local, command, domain)
         return name
+
+    def getAdminPublicAddress(self):
+        d = self.runEoc('--',
+                        'get-public-admin',
+                        executable='eocmanage-config')
+        def _cb(s):
+            for address in s.splitlines():
+                if address:
+                    return address
+        d.addCallback(_cb)
+        return d
 
 class MailingList(object):
     """Please do not instantiate directly, use anEocSite.getList(listname)."""

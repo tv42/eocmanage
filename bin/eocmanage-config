@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, sys, ConfigParser
+import os, sys, ConfigParser, errno
 from twisted.python import usage
 
 # TODO replace whole thing with enemies-of-carlotta --get and --set,
@@ -24,19 +24,22 @@ Operations:
         ]
 
     def parseArgs(self, operation, *args):
-        fn = getattr(self, 'do_%s' % operation, None)
+        fn = getattr(self, 'do_%s' % operation.replace('-', '_'), None)
         if fn is None:
             raise usage.UsageError('Unknown operation: %r' % operation)
 
         fn(*args)
 
-    def _configFileName(self, listname):
+    def _filename(self, *segments):
         EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
         if EOC_DOTDIR is None:
             EOC_DOTDIR = os.path.expanduser('~/.enemies-of-carlotta')
         filename = os.path.join(EOC_DOTDIR,
-                                listname,
-                                'config')
+                                *segments)
+        return filename
+
+    def _configFileName(self, listname):
+        filename = self._filename(listname, 'config')
         return filename
 
     def _openConfig(self, listname):
@@ -83,6 +86,23 @@ Operations:
         cp.write(f)
         f.close()
         os.rename('%s.tmp' % filename, filename)
+
+    def do_get_public_admin(self):
+        path = self._filename('public-admin')
+        try:
+            f = file(path)
+        except (OSError, IOError), e:
+            if e.errno == errno.ENOENT:
+                return
+            else:
+                raise
+        else:
+            try:
+                line = f.readline()
+                line = line.rstrip()
+                print line
+            finally:
+                f.close()
 
 def main():
     try:
