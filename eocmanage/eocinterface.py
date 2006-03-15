@@ -149,8 +149,8 @@ class MailingList(object):
 
     def getConfig(self, *items):
         d = self.site.runEoc('--',
-                             self.listname,
                              'get',
+                             self.listname,
                              executable='eocmanage-config',
                              *items)
         def _cb(output, items):
@@ -176,8 +176,8 @@ class MailingList(object):
             v = self._cfgSerialize(k, v)
             args.append('%s=%s' % (k, v))
         d = self.site.runEoc('--',
-                             self.listname,
                              'set',
+                             self.listname,
                              executable='eocmanage-config',
                              *args)
         return d

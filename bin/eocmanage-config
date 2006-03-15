@@ -7,11 +7,11 @@ from twisted.python import usage
 
 class Options(usage.Options):
     synopsis = """\
-Usage: eocmanage-config [OPTS..] [--] LIST OPERATION ARGS..
+Usage: eocmanage-config [OPTS..] [--] OPERATION [ARGS..]
 
 Operations:
-	get ITEM [ITEM..]
-        set ITEM=VALUE [ITEM=VALUE..]
+	get LIST ITEM [ITEM..]
+	set LIST ITEM=VALUE [ITEM=VALUE..]
 """
 
     ITEMS = [
@@ -23,16 +23,12 @@ Operations:
         'description',
         ]
 
-    def parseArgs(self, listname, operation, item1, *items):
+    def parseArgs(self, operation, *args):
         fn = getattr(self, 'do_%s' % operation, None)
         if fn is None:
             raise usage.UsageError('Unknown operation: %r' % operation)
 
-        l = []
-        l.append(item1)
-        l.extend(items)
-
-        fn(listname, l)
+        fn(*args)
 
     def _configFileName(self, listname):
         EOC_DOTDIR = os.environ.get('EOC_DOTDIR', None)
@@ -54,8 +50,11 @@ Operations:
         cp.read(filename)
         return cp
 
-    def do_get(self, listname, items):
+    def do_get(self, listname, *items):
         cp = self._openConfig(listname)
+
+        if not items:
+            raise usage.UsageError('No items to get')
 
         for item in items:
             if item not in self.ITEMS:
@@ -64,8 +63,11 @@ Operations:
             val = cp.get("list", item)
             print val
 
-    def do_set(self, listname, items):
+    def do_set(self, listname, *items):
         cp = self._openConfig(listname)
+
+        if not items:
+            raise usage.UsageError('No items to set')
 
         for item in items:
             if '=' not in item:
