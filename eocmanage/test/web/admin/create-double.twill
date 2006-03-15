@@ -1,8 +1,9 @@
+extend_with eocmanage.test.util.listutil
+eoc_set_admins oldbeard@example.net 4dmin@example.com
 go mockauth/login/4dmin@example.com
 code 200
 back
 
-extend_with eocmanage.test.util.listutil
 eoc_destroy foo@bar.example.com
 
 reload

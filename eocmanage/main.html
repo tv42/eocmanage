@@ -26,7 +26,7 @@
       </p>
     </nevow:invisible>
 
-    <nevow:invisible nevow:render="ifAdmin">
+    <nevow:invisible nevow:render="if" nevow:data="isAdmin">
       <nevow:invisible nevow:pattern="True">
 	<h2 nevow:render="i18n">List Administration</h2>
 	<div class="eocmanage-admin" nevow:render="form" />

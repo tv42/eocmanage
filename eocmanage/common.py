@@ -102,49 +102,6 @@ compy.registerAdapter(_authenticated,
                       context.RequestContext,
                       IAuthenticatedEmailAddress)
 
-ADMINS = ['4dmin@example.com', 'oldbeard@example.net'] #TODO unhardcode
-
-class ICurrentList(Interface):
-    pass
-# None is special, need to return something else for "not known".
-compy.registerAdapter(lambda _: '',
-                      context.WebContext,
-                      ICurrentList)
-
-def isAdmin(ctx):
-    address = IAuthenticatedEmailAddress(ctx)
-    return address in ADMINS
-
-def render_ifAdmin(self, ctx, data):
-    return render_if(ctx, isAdmin(ctx))
-
-def isOwner(ctx):
-    address = IAuthenticatedEmailAddress(ctx)
-    if not address:
-        return False
-    ml = ICurrentList(ctx)
-    if ml == '':
-        return False
-    d = ml.getOwners()
-    def _cb(owners, address):
-        return address in owners
-    d.addCallback(_cb, address)
-    return d
-
-def render_ifOwner(self, ctx, data):
-    d = defer.maybeDeferred(isAdmin, ctx)
-    def _gotAdmin(isAdm, ctx):
-        if isAdm:
-            return True
-        else:
-            return isOwner(ctx)
-    d.addCallback(_gotAdmin, ctx)
-
-    def _gotResult(r, ctx):
-        return render_if(ctx, r)
-    d.addCallback(_gotResult, ctx)
-    return d
-
 def render_statusmessage(self, ctx, data):
     try:
         status = inevow.IStatusMessage(ctx)

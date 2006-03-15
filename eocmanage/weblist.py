@@ -358,8 +358,44 @@ class WebMailingListFragment(rend.Fragment):
         return self.original.list()
 
     render_if = lambda self,ctx,data: common.render_if(ctx,data)
-    render_ifOwner = common.render_ifOwner
-    render_ifAdmin = common.render_ifAdmin
+
+    def _isOwner(self, ctx):
+        address = common.IAuthenticatedEmailAddress(ctx)
+        if not address:
+            return False
+        d = self.original.getOwners()
+        def _cb(owners, address):
+            return address in owners
+        d.addCallback(_cb, address)
+        return d
+
+    def render_ifOwner(self, ctx, data):
+        # can't use data_isOwner because children need their data intact
+
+        d = defer.maybeDeferred(self.data_isAdmin, ctx, data)
+        def _gotAdmin(isAdm, ctx):
+            if isAdm:
+                return True
+            else:
+                return self._isOwner(ctx)
+        d.addCallback(_gotAdmin, ctx)
+
+        def _gotResult(r, ctx):
+            return self.render_if(ctx, r)
+        d.addCallback(_gotResult, ctx)
+        return d
+
+    def data_isAdmin(self, ctx, data):
+        address = common.IAuthenticatedEmailAddress(ctx)
+        if not address:
+            return False
+
+        d = self.original.site.getAdminAddresses()
+        def cb(admins, address):
+            return address in admins
+        d.addCallback(cb, address)
+        return d
+
 
     render_zebra = zebra.zebra()
     render_statusmessage = common.render_statusmessage
@@ -388,7 +424,6 @@ class WebMailingList(object):
         super(WebMailingList, self).__init__(**kw)
 
     def rend(self, ctx, data):
-        ctx.remember(self.list, common.ICurrentList)
         return WebMailingListFragment(self.list)
 
     def locateConfigurable(self, ctx, name):

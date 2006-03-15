@@ -104,6 +104,23 @@ Operations:
             finally:
                 f.close()
 
+    def do_get_admins(self):
+        path = self._filename('admins')
+        try:
+            f = file(path)
+        except (OSError, IOError), e:
+            if e.errno == errno.ENOENT:
+                return
+            else:
+                raise
+        else:
+            try:
+                for line in f:
+                    line = line.rstrip()
+                    print line
+            finally:
+                f.close()
+
 def main():
     try:
         opts = Options()

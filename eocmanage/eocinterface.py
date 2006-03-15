@@ -115,6 +115,18 @@ class EocSite(object):
         d.addCallback(_cb)
         return d
 
+    def getAdminAddresses(self):
+        d = self.runEoc('--',
+                        'get-admins',
+                        executable='eocmanage-config')
+        def _cb(s):
+            for address in s.splitlines():
+                if address:
+                    yield address
+        d.addCallback(_cb)
+        d.addCallback(list)
+        return d
+
 class MailingList(object):
     """Please do not instantiate directly, use anEocSite.getList(listname)."""
     def __init__(self, site, listname):

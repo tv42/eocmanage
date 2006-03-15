@@ -47,7 +47,17 @@ class EocManageFragment(rend.Fragment):
         return d
 
     render_if = lambda self,ctx,data: common.render_if(ctx,data)
-    render_ifAdmin = common.render_ifAdmin
+
+    def data_isAdmin(self, ctx, data):
+        address = common.IAuthenticatedEmailAddress(ctx)
+        if not address:
+            return False
+
+        d = self.original.getAdminAddresses()
+        def cb(admins, address):
+            return address in admins
+        d.addCallback(cb, address)
+        return d
 
     render_zebra = zebra.zebra()
     render_statusmessage = common.render_statusmessage

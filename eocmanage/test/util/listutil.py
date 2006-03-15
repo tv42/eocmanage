@@ -227,6 +227,16 @@ def eoc_unset_public_admin():
     path = os.path.join('dot-eoc', 'public-admin')
     os.unlink(path)
 
+def eoc_set_admins(*addresses):
+    """Set the admin addresses"""
+    path = os.path.join('dot-eoc', 'admins')
+    f = file(path, 'w')
+    for name in addresses:
+        assert '@' in name
+        assert not name.startswith('.')
+        print >>f, name
+    f.close()
+
 __all__ = ['eoc_destroy',
            'eoc_create',
            'eoc_confirm_sub_accept',
@@ -235,4 +245,5 @@ __all__ = ['eoc_destroy',
            'eoc_set_config',
            'eoc_set_public_admin',
            'eoc_unset_public_admin',
+           'eoc_set_admins',
            ]
