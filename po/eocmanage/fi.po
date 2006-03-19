@@ -5,27 +5,27 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eocmanage 0.0\n"
-"PO-Revision-Date: 2005-11-03 07:31+0200\n"
+"PO-Revision-Date: 2006-03-19 22:06+0200\n"
 "Last-Translator: Tommi Virtanen <tv@inoi.fi>\n"
 "Language-Team: Finnish <translation-team-fi@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: eocmanage/weblist.py:86
+#: eocmanage/weblist.py:87
 msgid "Add subscriber to list"
 msgstr "Lisää osoite listalle"
 
-#: eocmanage/weblist.py:16 eocmanage/weblist.py:53 eocmanage/weblist.py:83
-#: eocmanage/weblist.py:100 eocmanage/list.html:54
+#: eocmanage/weblist.py:17 eocmanage/weblist.py:54 eocmanage/weblist.py:84
+#: eocmanage/weblist.py:101 eocmanage/list.html:51
 msgid "Address"
 msgstr "Osoite"
 
-#: eocmanage/main.html:37
+#: eocmanage/main.html:36
 msgid "All Lists"
 msgstr "Kaikki listat"
 
-#: eocmanage/list.html:37
+#: eocmanage/list.html:34
 msgid ""
 "As extra protection, you will be sent an email, and the action will only be "
 "performed <em>after</em> you have confirmed it by replying to the message."
@@ -33,166 +33,167 @@ msgstr ""
 "Haitanteon estämiseksi pyydetty toiminto toteutetaan <em>vasta sitten</em>\n"
 "kun olet vastannut sinulle lähetettyyn vahvistuspyyntöön."
 
-#: eocmanage/weblist.py:114
+#: eocmanage/weblist.py:115
 msgid "Automatic"
 msgstr "Automaattinen"
 
-#: eocmanage/main.html:15
+#: eocmanage/main.html:14
 msgid "Below is a listing of all the public mailing lists."
 msgstr "Alla on luettelo kaikista postituslistoista."
 
-#: eocmanage/main.html:18
+#: eocmanage/main.html:17
 msgid ""
 "Choose a list to subscribe, unsubscribe or to get more information about it."
 msgstr ""
 "Valitse lista jolle liittyä, jolta poistua, tai saadaksesi lisätietoa "
 "listasta."
 
-#: eocmanage/webroot.py:64
+#: eocmanage/webroot.py:40
 msgid "Create"
 msgstr "Luo"
 
-#: eocmanage/webroot.py:65
+#: eocmanage/webroot.py:41
 msgid "Create a New List"
 msgstr "Tee uusi lista"
 
-#: eocmanage/webroot.py:69
+#: eocmanage/webroot.py:45
 #, python-format
 msgid "Created list %s"
 msgstr "Tehty lista %s"
 
-#: eocmanage/list.html:50
+#: eocmanage/list.html:47
 msgid "Current Subscribers"
 msgstr "Listan jäsenet"
 
-#: eocmanage/weblist.py:143 eocmanage/main.html:41
+#: eocmanage/weblist.py:148 eocmanage/main.html:40
 msgid "Description"
 msgstr "Kuvaus"
 
-#: eocmanage/weblist.py:225 eocmanage/weblist.py:226
+#: eocmanage/weblist.py:279 eocmanage/weblist.py:280
 msgid "Destroy"
 msgstr "Tuhoa"
 
-#: eocmanage/weblist.py:233
+#: eocmanage/weblist.py:287
 #, python-format
 msgid "Destroyed list %s"
 msgstr "Tuhottu lista %s"
 
-#: eocmanage/weblist.py:145 eocmanage/weblist.py:146
+#: eocmanage/weblist.py:150 eocmanage/weblist.py:151
 msgid "Edit"
 msgstr "Muokkaa"
 
-#: eocmanage/weblist.py:214
+#: eocmanage/weblist.py:268
 msgid "Edited settings: "
 msgstr "Muokattu asetuksia: "
 
-#: eocmanage/webroot.py:55
+#: eocmanage/webroot.py:31
 msgid "Eoc failed"
 msgstr "Eoc keskeytti virheen takia"
 
-#: eocmanage/weblist.py:112
+#: eocmanage/weblist.py:113
 msgid "Free"
 msgstr "Vapaa"
 
-#: eocmanage/main.html:40
+#: eocmanage/main.html:39
 msgid "List"
 msgstr "Lista"
 
-#: eocmanage/list.html:42 eocmanage/main.html:32
+#: eocmanage/list.html:39 eocmanage/main.html:31
 msgid "List Administration"
 msgstr "Listan ylläpito"
 
-#: eocmanage/webroot.py:62
+#: eocmanage/webroot.py:38
 msgid "List address"
 msgstr "Listan osoite"
 
-#: eocmanage/list.html:6 eocmanage/list.html:13
+#: eocmanage/list.html:10
 msgid "Mailing List"
 msgstr "Postituslista"
 
-#: eocmanage/weblist.py:113
+#: eocmanage/weblist.py:423
+#, python-format
+msgid "Mailing List %s"
+msgstr "Postituslista %s"
+
+#: eocmanage/weblist.py:114
 msgid "Moderated"
 msgstr "Moderoitu"
 
-#: eocmanage/list.html:53
-msgid "Name"
-msgstr "Nimi"
-
-#: eocmanage/main.html:61
+#: eocmanage/main.html:60
 msgid "No lists."
 msgstr "Ei listoja."
 
-#: eocmanage/list.html:67
+#: eocmanage/list.html:64
 msgid "No subscribers."
 msgstr "Ei jäseniä."
 
-#: eocmanage/weblist.py:140
+#: eocmanage/weblist.py:145
 msgid "Notify owners on forced unsubscribe"
 msgstr "Ilmoita omistajille pakotetuista poistoista"
 
-#: eocmanage/weblist.py:137
+#: eocmanage/weblist.py:142
 msgid "Notify owners on subscription changes"
 msgstr "Ilmoita omistajille liittymisista ja poistumisista"
 
-#: eocmanage/main.html:5 eocmanage/main.html:10
+#: eocmanage/webroot.py:77 eocmanage/main.html:9
 msgid "Overview of Mailing Lists"
 msgstr "Postituslistat"
 
-#: eocmanage/weblist.py:134
+#: eocmanage/weblist.py:137
 msgid "Posting"
 msgstr "Viestien lähetys"
 
-#: eocmanage/weblist.py:103
+#: eocmanage/weblist.py:104
 msgid "Remove subscriber from list"
 msgstr "Poista osoite listalta"
 
-#: eocmanage/weblist.py:18
+#: eocmanage/weblist.py:19
 msgid "Request Subscription"
 msgstr "Liity listalle"
 
-#: eocmanage/weblist.py:55
+#: eocmanage/weblist.py:56
 msgid "Request Unsubscription"
 msgstr "Poistu listalta"
 
-#: eocmanage/weblist.py:172
+#: eocmanage/weblist.py:219
 msgid "Settings not changed."
 msgstr "Asetuksia ei muutettu."
 
-#: eocmanage/weblist.py:19
+#: eocmanage/weblist.py:20
 msgid "Subscribe"
 msgstr "Liity listalle"
 
-#: eocmanage/weblist.py:85
+#: eocmanage/weblist.py:86
 msgid "Subscribe Without Confirmation"
 msgstr "Liitä listalle ilman varmistusta"
 
-#: eocmanage/weblist.py:91
+#: eocmanage/weblist.py:92
 #, python-format
 msgid "Subscribed %s"
 msgstr "Liitetty osoite %s"
 
-#: eocmanage/list.html:33
+#: eocmanage/list.html:30
 msgid "Subscribing to the List"
 msgstr "Listalle liittyminen"
 
-#: eocmanage/weblist.py:128
+#: eocmanage/weblist.py:129
 msgid "Subscription"
 msgstr "Liittyminen"
 
-#: eocmanage/weblist.py:44
+#: eocmanage/weblist.py:45
 #, python-format
 msgid "Subscription confirmation request sent to %s"
 msgstr "Liittymisen vahvistuspyyntö lähetetty osoitteeseen %s"
 
-#: eocmanage/list.html:73 eocmanage/main.html:66
+#: eocmanage/list.html:70 eocmanage/main.html:65
 msgid "These lists are managed by"
 msgstr "Listoja hoitaa"
 
-#: eocmanage/list.html:27
+#: eocmanage/list.html:24
 msgid "To post a message to the list, send email to"
 msgstr "Lähettääksesi viestin listalle, käytä vastaanottajana osoitetta"
 
-#: eocmanage/list.html:35
+#: eocmanage/list.html:32
 msgid ""
 "To subscribe or unsubscribe, type your address and press the corresponding "
 "button."
@@ -200,41 +201,83 @@ msgstr ""
 "Liittyäksesi listalle tai poistuaksesi listalta syötä sähköpostiosoitteesi\n"
 "vastaavaan kenttään ja paina nappia."
 
-#: eocmanage/weblist.py:56
+#: eocmanage/weblist.py:57
 msgid "Unsubscribe"
 msgstr "Poistu listalta"
 
-#: eocmanage/weblist.py:102
+#: eocmanage/weblist.py:103
 msgid "Unsubscribe Without Confirmation"
 msgstr "Poista listalta ilman varmistusta"
 
-#: eocmanage/weblist.py:108
+#: eocmanage/weblist.py:109
 #, python-format
 msgid "Unsubscribed %s"
 msgstr "Poistettu osoite %s"
 
-#: eocmanage/weblist.py:72
+#: eocmanage/weblist.py:73
 #, python-format
 msgid "Unsubscription confirmation request sent to %s"
 msgstr "Poistumisen vahvistuspyyntö lähetetty osoitteeseen %s"
 
-#: eocmanage/list.html:25
+#: eocmanage/list.html:22
 msgid "Using the List"
 msgstr "Listan käyttäminen"
 
-#: eocmanage/main.html:23
+#: eocmanage/main.html:22
 msgid "You can ask for help by emailing"
 msgstr "Apua voi pyytää osoitteesta"
 
-#: eocmanage/list.html:17
+#: eocmanage/weblist.py:193
+#, python-format
+msgid "added description %r"
+msgstr "lisätty kuvaus %r"
+
+#: eocmanage/list.html:14
 msgid "all lists"
 msgstr "kaikki listat"
 
-#: eocmanage/weblist.py:194
+#: eocmanage/weblist.py:245
 #, python-format
 msgid "changed %(key)s from %(old)s to %(new)s"
 msgstr "vaihdettu %(key)s, vanha arvo %(old)s, uusi arvo %(new)s"
 
-#: eocmanage/list.html:75 eocmanage/main.html:68
+#: eocmanage/weblist.py:197
+#, python-format
+msgid "changed description from %(old)r to %(new)r"
+msgstr "vaihdettu kuvaus arvosta %(old)s arvoon %(new)s"
+
+#: eocmanage/weblist.py:169
+#, python-format
+msgid "changed posting from %(old)s to %(new)s"
+msgstr "vaihdettu postitusoikeudet arvosta %(old)s arvoon %(new)s"
+
+#: eocmanage/weblist.py:162
+#, python-format
+msgid "changed subscription from %(old)s to %(new)s"
+msgstr "vaihdettu listalle liittyminen arvosta %(old)s arvoon %(new)s"
+
+#: eocmanage/weblist.py:184
+#, python-format
+msgid ""
+"changed whether to notify owners on forced unsubscription from %(old)s to %"
+"(new)s"
+msgstr ""
+"vaihdettu virheestä johtuvien poistojen raportointi listan omistajille "
+"arvosta %(old)s arvoon %(new)s"
+
+#: eocmanage/weblist.py:176
+#, python-format
+msgid ""
+"changed whether to notify owners on subscription from %(old)s to %(new)s"
+msgstr ""
+"vaihdettu liittymisistä omistajille ilmoittaminen arvosta %(old)s arvoon %"
+"(new)s"
+
+#: eocmanage/weblist.py:195
+#, python-format
+msgid "removed description, used to be %r"
+msgstr "poistettu kuvaus, oli %r"
+
+#: eocmanage/list.html:72 eocmanage/main.html:67
 msgid "web interface is powered by"
 msgstr "www-liittymänä on"
